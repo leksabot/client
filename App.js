@@ -1,31 +1,75 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import React, { Component } from 'react'
+import { Provider } from 'react-redux'
+import store from './store/index'
+import { createStackNavigator } from 'react-navigation'
+import { StyleSheet, Text, View, BackHandler } from 'react-native'
+import Splash from './screens/Splash'
+import Game from './screens/Game'
+import Chat from './screens/Chat'
+import Register from './screens/Register'
+import Login from './screens/Login'
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+let LoginStack = createStackNavigator({
+  Login: {
+    screen: Login
+  },
+}, {
+  headerMode: 'none',
+  initialRouteName: 'Login'
+})
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+let RegisterStack = createStackNavigator({
+  Register: {
+    screen: Register
+  },
+}, {
+  headerMode: 'none',
+  initialRouteName: 'Register'
+})
 
+const RootStack = createStackNavigator(
+  {
+    'Splash': Splash,
+    'Game': Game,
+    'Chat': Chat,
+    'Login': LoginStack,
+    'Register': RegisterStack
+  },
+  {
+    initialRouteName: 'Splash',
+    headerMode: 'none',
+    tabBarOptions: {
+      activeTintColor: 'white',
+      inactiveTintColor: 'dimgrey',
+      labelStyle: {
+        fontSize: 0,
+      },
+      style: {
+        backgroundColor: 'lightsalmon'
+      },
+    }
+  }
+)
 
 export default class App extends Component {
+
+  componentDidMount() {
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      this.goBack()
+      return true
+    })
+  }
+
+  componentWillUnmount() {
+    this.backHandler.remove()
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
-    );
+      <Provider store={store}>
+        <RootStack />
+      </Provider>
+    )
   }
 }
 
