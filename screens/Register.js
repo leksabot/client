@@ -13,8 +13,7 @@ export default class Register extends Component {
 
   register() {
     if (this.state.email && this.state.password) {
-      // this.props.navigation.navigate('Language')
-      Alert.alert('Pick your mother language')
+      this.props.navigation.navigate('Language')
     } else {
       Alert.alert('Email and password input cannot be empty')
     }

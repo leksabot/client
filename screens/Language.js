@@ -1,11 +1,11 @@
 import React, {Component, Fragment} from 'react'
 import {StyleSheet, Text, View, ScrollView,  Alert, TouchableOpacity} from 'react-native'
 
-export default class Game extends Component {
+export default class Language extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>This is Game</Text>
+        <Text>This is Language</Text>
       </View>
     )
   }
