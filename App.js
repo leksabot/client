@@ -1,49 +1,105 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import React, { Component } from 'react'
+import { Provider } from 'react-redux'
+import store from './store/index'
+import { createStackNavigator, createDrawerNavigator } from 'react-navigation'
+import { StyleSheet, Dimensions, BackHandler, Alert } from 'react-native'
+import Splash from './screens/Splash'
+import Language from './screens/Language'
+import Game from './screens/Game'
+import Chat from './screens/Chat'
+import Register from './screens/Register'
+import Login from './screens/Login'
+import SidebarComponent from './components/Sidebar'
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+const LoginStack = createStackNavigator({'Login': Login}, {
+  headerMode: 'none',
+  initialRouteName: 'Login'
+})
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+const RegisterStack = createStackNavigator({'Register': Register}, {
+  headerMode: 'none',
+  initialRouteName: 'Register'
+})
 
+const SidebarStack = createDrawerNavigator({'Chat': Chat, 'Game': Game}, {
+  contentComponent: SidebarComponent,
+  drawerWidth: Dimensions.get('window').width - 130,
+})
+
+const RootStack = createStackNavigator(
+  {
+    'Splash': Splash,
+    'Language': Language,
+    'Menu': SidebarStack,
+    'Login': LoginStack,
+    'Register': RegisterStack
+  },
+  {
+    initialRouteName: 'Splash',
+    headerMode: 'none'
+  }
+)
 
 export default class App extends Component {
+
+  componentDidMount() {
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      return true
+    })
+  }
+
+  componentWillUnmount() {
+    this.backHandler.remove()
+  }
+
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
-    );
+      <Provider store={store}>
+        <RootStack />
+      </Provider>
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+  },
+  navSection: {
+    paddingLeft: 15,
+    paddingVertical: 20,
+    backgroundColor: '#2fc8db',
+    marginBottom: 10
+  },
+  menuSection: {
+    paddingLeft: 25,
+    height: Dimensions.get('window').height - 155,
+  },
+  menuText: {
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    color: 'black',
+    marginLeft: 10
+  },
+  navUser: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    padding: 10
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  navName: {
+    fontSize: 16,
+    marginLeft: 10,
+    color: 'white'
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  navEmail: {
+    fontSize: 12,
+    marginLeft: 10,
+    color: 'white'
   },
-});
+  logout: {
+    position: 'absolute',
+    bottom: 5,
+    left: '10%'
+  }
+})
