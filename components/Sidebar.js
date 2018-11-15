@@ -35,19 +35,19 @@ const SidebarComponent = (props) => (
       <View style={styles.menuSection}>
         <TouchableOpacity onPress={() => toChat(props)}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon name='wechat' size={25} color='#2fc8db'/>
+            <Icon name='wechat' size={25} color='tomato'/>
             <Text style={styles.menuText}>Chat</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => toGame(props)}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon name='gamepad' size={25} color='#2fc8db'/>
+            <Icon name='gamepad' size={25} color='tomato'/>
             <Text style={styles.menuText}>Game</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.logout} onPress={() => logout(props)}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon name='sign-out' size={25} color='#2fc8db'/>
+            <Icon name='sign-out' size={25} color='tomato'/>
             <Text style={styles.menuText}>Logout</Text>
           </View>
         </TouchableOpacity>
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   navSection: {
     paddingLeft: 15,
     paddingVertical: 20,
-    backgroundColor: '#2fc8db',
+    backgroundColor: 'tomato',
     marginBottom: 10
   },
   menuSection: {

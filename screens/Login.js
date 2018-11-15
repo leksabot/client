@@ -1,6 +1,6 @@
 
 import React, {Component, Fragment} from 'react'
-import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity} from 'react-native'
+import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity, Image} from 'react-native'
 
 export default class Login extends Component {
   constructor(props) {
@@ -22,6 +22,10 @@ export default class Login extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Image
+          style={{width: 180, height: 180}}
+          source={require('../assets/bot.png')}
+        />
         <Text style={styles.welcome}>Login</Text>
         <TextInput
           style={styles.form}
@@ -52,7 +56,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#009ef7',
+    backgroundColor: 'white',
     paddingBottom: 50,
     paddingTop: 50
   },
@@ -60,18 +64,18 @@ const styles = StyleSheet.create({
     fontSize: 35,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: 'white',
+    color: '#ff3f40',
     margin: 10,
   },
   txgrey: {
     fontSize: 16,
     textAlign: 'left',
-    color: '#c3c3c3',
+    color: '#c0c0c0',
   },
   txwhite: {
     fontSize: 16,
     textAlign: 'left',
-    color: 'white',
+    color: '#ff3f40',
   },
   txblack: {
     fontSize: 16,
@@ -81,25 +85,25 @@ const styles = StyleSheet.create({
   },
   form: {
     textAlign: 'left',
-    color: 'white',
+    color: '#ff3f40',
     width: 250,
     height: 40,
     fontSize: 15,
     borderWidth: 1,
     backgroundColor: 'transparent',
-    borderColor: 'white',
+    borderColor: '#ff3f40',
     marginTop: 20,
     marginBottom: 20,
     padding: 10
   },
   icon: {
     fontSize: 16,
-    color: 'white'
+    color: '#ff3f40'
   },
   button: {
     width: '60%',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#ff3f40',
     color: 'black',
     padding: 10,
     marginBottom: 20,
