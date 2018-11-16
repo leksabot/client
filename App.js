@@ -21,6 +21,7 @@ const RegisterStack = createStackNavigator({'Register': Register}, {
   initialRouteName: 'Register'
 })
 
+// sidebar for chat and game
 const SidebarStack = createDrawerNavigator({'Chat': Chat, 'Game': Game}, {
   contentComponent: SidebarComponent,
   drawerWidth: Dimensions.get('window').width - 130,
@@ -43,12 +44,14 @@ const RootStack = createStackNavigator(
 export default class App extends Component {
 
   componentDidMount() {
+    // made back button on Android disable
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       return true
     })
   }
 
   componentWillUnmount() {
+    // made back button on Android disable
     this.backHandler.remove()
   }
 
