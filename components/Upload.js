@@ -51,7 +51,7 @@ export default class Upload extends Component {
           onPress={() => {
             this.pickImage()
           }}>
-          <Icon name='camera' size={25} color='tomato'/>
+          <Icon name='camera' size={25} color='#FF3F04'/>
         </TouchableOpacity>
       </Fragment>
     )

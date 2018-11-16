@@ -6,13 +6,17 @@ import Upload from '../components/Upload'
 
 export default class Chat extends Component {
 
-  state = {
-    newMsg: '',
-    messages: []
+  constructor(props) {
+    super(props)
+    this.state = {
+      newMsg: '',
+      messages: [],
+      langcode: this.props.langcode
+    }
   }
 
   componentDidMount() {
-    AsyncStorage.getItem('messages')
+    AsyncStorage.getItem(`messages-${this.state.langcode}`)
     .then(messages => {
       if (messages) {
         this.setState({
@@ -45,7 +49,7 @@ export default class Chat extends Component {
         method: 'post',
         data: {
           message: this.state.newMsg,
-          langcode: 'en'
+          langcode: this.state.langcode
         }
       })
       .then(({data}) => {
@@ -58,7 +62,7 @@ export default class Chat extends Component {
           }],
           newMsg: ''
         }, () => {
-          AsyncStorage.setItem('messages', JSON.stringify(this.state.messages))
+          AsyncStorage.setItem(`messages-${this.state.langcode}`, JSON.stringify(this.state.messages))
         })
       })
       .catch(err => {
@@ -77,7 +81,6 @@ export default class Chat extends Component {
               let messsage = item
               return (
                 <View style={styles[`bubble${messsage.user}`]}>
-                  {/* <Text style={styles[`text${item.user}`]}>{ item.text }</Text> */}
                   <FlatList style={[{flexDirection: 'row'}, styles[`bubbleText${messsage.user}`]]}
                     data = {messsage.text.split(' ')}
                     renderItem={({ item }) =>
@@ -96,10 +99,12 @@ export default class Chat extends Component {
         </View>
         <View style={styles.inputBox}>
           <TextInput style={styles.input} onChangeText={(text) => {this.changeValue('newMsg', text)}} value={this.state.newMsg} placeholder='Say something to Leksa' />
-          <Upload />
-          <TouchableOpacity style={styles.send} onPress={() => this.sendMsg()} >
-            <Icon name='paper-plane' size={20} color='#FF3F04'/>
-          </TouchableOpacity>
+          { this.state.newMsg.length > 0 ?
+            <TouchableOpacity style={styles.send} onPress={() => this.sendMsg()} >
+              <Icon name='paper-plane' size={20} color='#FF3F04'/>
+            </TouchableOpacity>
+            : <Upload />
+          }
         </View>
       </View>
     )
@@ -119,7 +124,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     height: 50,
-    borderWidth: 3,
+    borderTopWidth: 2,
     borderColor: '#FF3F04',
     backgroundColor: 'white'
   },

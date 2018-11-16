@@ -22,8 +22,25 @@ const RegisterStack = createStackNavigator({'Register': Register}, {
   initialRouteName: 'Register'
 })
 
+const EnChat = () => {
+  return (
+    <Chat langcode='en' />
+  )
+}
+
+const FrChat = () => {
+  return (
+    <Chat langcode='fr' />
+  )
+}
+
+const LangChatStack = createDrawerNavigator({'English': EnChat, 'Français': FrChat}, {
+  contentComponent: SidebarComponent,
+  drawerWidth: Dimensions.get('window').width - 130,
+})
+
 // sidebar for chat and game
-const SidebarStack = createDrawerNavigator({'Chat': Chat, 'Game': Game}, {
+const SidebarStack = createDrawerNavigator({'Chat': LangChatStack, 'Game': Game}, {
   contentComponent: SidebarComponent,
   drawerWidth: Dimensions.get('window').width - 130,
 })
