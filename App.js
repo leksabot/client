@@ -5,6 +5,7 @@ import { createStackNavigator, createDrawerNavigator } from 'react-navigation'
 import { StyleSheet, Dimensions, BackHandler, Alert } from 'react-native'
 import Splash from './screens/Splash'
 import Language from './screens/Language'
+import HangMan from './screens/Hangman'
 import Game from './screens/Game'
 import Chat from './screens/Chat'
 import Register from './screens/Register'
@@ -33,7 +34,8 @@ const RootStack = createStackNavigator(
     'Language': Language,
     'Menu': SidebarStack,
     'Login': LoginStack,
-    'Register': RegisterStack
+    'Register': RegisterStack,
+    'HangmanGame' : HangMan
   },
   {
     initialRouteName: 'Splash',
