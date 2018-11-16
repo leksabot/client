@@ -1,12 +1,12 @@
 import React, {Component, Fragment} from 'react'
 import {StyleSheet, Text, View, ScrollView,  Alert, TouchableOpacity} from 'react-native'
 
-export default class Game extends Component {
+export default class HangmanGame extends Component {
   render() {
     return (
       <View style={styles.container}>
         <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('HangmanGame')}>
-          <Text style={styles.txwhite}>Start Game</Text>
+          <Text style={styles.txwhite}>testingggg</Text>
         </TouchableOpacity>
       </View>
     )
