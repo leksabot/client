@@ -14,8 +14,8 @@ const mapDispatchToProps = dispatch => ({
   loggingout : () => dispatch(LogoutAction())
 })
 
-const toChat = (props) => (
-  props.activeItemKey !== 'Chat' && props.navigation.navigate('Chat')
+const toChat = (props, lang) => (
+  props.navigation.navigate(lang)
 )
 
 const toGame = (props) => (
@@ -46,10 +46,18 @@ const SidebarComponent = (props) => (
         </View>
       </View>
       <View style={styles.menuSection}>
-        <TouchableOpacity onPress={() => toChat(props)}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Icon name='wechat' size={25} color='tomato'/>
+          <Text style={styles.menuText}>Chat</Text>
+        </View>
+        <TouchableOpacity onPress={() => toChat(props, 'English')}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon name='wechat' size={25} color='tomato'/>
-            <Text style={styles.menuText}>Chat</Text>
+            <Text style={[styles.menuText, {paddingLeft: 50}]}>English</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => toChat(props, 'Français')}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={[styles.menuText, {paddingLeft: 50}]}>Français</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => toGame(props)}>

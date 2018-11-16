@@ -9,7 +9,7 @@ export default function(name, email, password, language) {
       })
       axios({
         method: 'POST',
-        url: 'http://192.168.0.196:3023/user/register',
+        url: 'https://apileksabot23.efratsadeli.online/user/register',
         data: {
           name: name,
           email: email,
