@@ -1,6 +1,18 @@
 import React from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { StyleSheet, Dimensions, ScrollView, Image, Text, View, TouchableOpacity, Alert } from 'react-native'
+import { StyleSheet, Dimensions, ScrollView, Image, Text, View, TouchableOpacity } from 'react-native'
+import { connect } from 'react-redux'
+import LogoutAction from '../store/actions/logout'
+
+const mapStateToProps = state => ({
+  user: state.authReducer.user,
+  loading: state.authReducer.loading,
+  error: state.authReducer.error
+})
+
+const mapDispatchToProps = dispatch => ({
+  loggingout : () => dispatch(LogoutAction())
+})
 
 const toChat = (props) => (
   props.activeItemKey !== 'Chat' && props.navigation.navigate('Chat')
@@ -10,9 +22,10 @@ const toGame = (props) => (
   props.activeItemKey !== 'Game' && props.navigation.navigate('Game')
 )
 
-const logout = (props) => (
-  props.navigation.navigate('Login')
-)
+const logout = (props) => {
+  props.loggingout()
+  return props.navigation.navigate('Login')
+}
 
 const SidebarComponent = (props) => (
   <View style={styles.container}>
@@ -56,6 +69,8 @@ const SidebarComponent = (props) => (
   </View>
 )
 
+export default connect(mapStateToProps, mapDispatchToProps)(SidebarComponent)
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -98,5 +113,3 @@ const styles = StyleSheet.create({
     left: '10%'
   }
 })
-
-export default SidebarComponent

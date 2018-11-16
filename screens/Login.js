@@ -1,21 +1,45 @@
 
 import React, {Component, Fragment} from 'react'
-import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity, Image} from 'react-native'
+import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity, Image, AsyncStorage} from 'react-native'
+import { connect } from 'react-redux'
+import LoginAction from '../store/actions/login'
 
-export default class Login extends Component {
+const mapStateToProps = state => ({
+  user: state.authReducer.user,
+  loading: state.authReducer.loading,
+  error: state.authReducer.error
+})
+
+const mapDispatchToProps = dispatch => ({
+  logging : (email, pass) => dispatch(LoginAction(email, pass))
+})
+
+class Login extends Component {
   constructor(props) {
     super(props)
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      error: ''
     }
   }
 
-  login() {
-    if (this.state.email && this.state.password) {
-      this.props.navigation.navigate('Chat')
-    } else {
-      Alert.alert('Email and password input cannot be empty')
+  login = async() => {
+    const { email, password } = this.state
+    if (!email || !password) {
+      Alert.alert('Input cannot be empty')
+    }
+    try {
+      let data = await this.props.logging(email, password)
+      if(data) {
+        let user = await AsyncStorage.getItem('user')
+        if (user) {
+          this.setState({ email: '', password: '' })
+          this.props.navigation.navigate('Chat')
+        }
+      }
+    } catch (e) {
+      console.log(e)
     }
   }
 
@@ -27,6 +51,9 @@ export default class Login extends Component {
           source={require('../assets/bot.png')}
         />
         <Text style={styles.welcome}>Login</Text>
+        {
+          this.props.error && <Text style={styles.notif}>{this.props.error}</Text>
+        }
         <TextInput
           style={styles.form}
           value={this.state.email}
@@ -38,18 +65,20 @@ export default class Login extends Component {
           placeholder='Input your password'
           onChangeText={(password) => this.setState({password})}/>
         <TouchableOpacity style={styles.button} onPress={() => this.login()}>
-          <Text style={styles.txblack}>Login</Text>
+          <Text style={styles.txwhite}>Login</Text>
         </TouchableOpacity>
         <View style={{flexDirection: 'row'}}>
           <Text style={styles.txgrey}> Do not have an account?  </Text>
           <TouchableOpacity onPress={() => this.props.navigation.navigate('Register')}>
-              <Text style={styles.txwhite}>Register</Text>
+              <Text style={styles.txred}>Register</Text>
           </TouchableOpacity>
         </View>
       </View>
     )
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login)
 
 const styles = StyleSheet.create({
   container: {
@@ -72,15 +101,15 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     color: '#c0c0c0',
   },
-  txwhite: {
+  txred: {
     fontSize: 16,
     textAlign: 'left',
     color: '#ff3f40',
   },
-  txblack: {
+  txwhite: {
     fontSize: 16,
     textAlign: 'left',
-    color: 'black',
+    color: 'white',
     fontWeight: 'bold',
   },
   form: {
@@ -92,8 +121,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: 'transparent',
     borderColor: '#ff3f40',
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 10,
+    marginBottom: 10,
     padding: 10
   },
   icon: {
@@ -109,4 +138,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 20
   },
+  notif: {
+    color: 'black',
+    fontSize: 12
+  }
 })

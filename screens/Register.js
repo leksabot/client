@@ -1,21 +1,52 @@
 
 import React, {Component, Fragment} from 'react'
-import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity, Image} from 'react-native'
+import CountryPicker from 'react-native-country-picker-modal'
+import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity, Image, AsyncStorage} from 'react-native'
+import RegAction from '../store/actions/register'
+import { connect } from 'react-redux'
 
-export default class Register extends Component {
+const DARK_COLOR = '#ff3f40'
+const PLACEHOLDER_COLOR = 'rgba(255,255,255,0.2)'
+const LIGHT_COLOR = '#fff'
+
+const mapStateToProps = state => ({
+  user: state.authReducer.user,
+  loading: state.authReducer.loading,
+  error: state.authReducer.error
+})
+
+const mapDispatchToProps = dispatch => ({
+  registering : (name, email, pass, lang) => dispatch(RegAction(name, email, pass, lang))
+})
+
+class Register extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      name: '',
       email: '',
-      password: ''
+      password: '',
+      cca2: 'ID',
+      callingCode: ''
     }
   }
 
-  register() {
-    if (this.state.email && this.state.password) {
-      this.props.navigation.navigate('Language')
-    } else {
-      Alert.alert('Email and password input cannot be empty')
+  register = async() => {
+    const { name, email, password, cca2 } = this.state
+    if (!email || !password || !name) {
+      Alert.alert('Input cannot be empty')
+    }
+    try {
+      let data = await this.props.registering(name, email, password, cca2)
+      if(data) {
+        let user = await AsyncStorage.getItem('user')
+        if (user) {
+          this.setState({ name: '', email: '', password: '' })
+          this.props.navigation.navigate('Chat')
+        }
+      }
+    } catch (e) {
+      console.log(e)
     }
   }
 
@@ -27,29 +58,58 @@ export default class Register extends Component {
           source={require('../assets/bot.png')}
         />
         <Text style={styles.welcome}>Register</Text>
+        {
+          this.props.error.name && <Text style={styles.notif}>{this.props.error.name.message}</Text>
+        }
+        <TextInput
+          style={styles.form}
+          value={this.state.name}
+          placeholder='Input your name'
+          onChangeText={(name) => this.setState({name})}/>
+        {
+          this.props.error.email && <Text style={styles.notif}>{this.props.error.email.message}</Text>
+        }
         <TextInput
           style={styles.form}
           value={this.state.email}
           placeholder='Input your email'
           onChangeText={(email) => this.setState({email})}/>
+        {
+          this.props.error.password && <Text style={styles.notif}>{this.props.error.password.message}</Text>
+        }
         <TextInput
           style={styles.form}
           value={this.state.password}
           placeholder='Input your password'
           onChangeText={(password) => this.setState({password})}/>
+        <View style={{flexDirection: 'row', width: 250}}>
+          <Text style={{alignItems: 'flex-start', textAlign: 'left'}}>Choose mother language</Text>
+          <CountryPicker
+          filterPlaceholderTextColor={PLACEHOLDER_COLOR}
+          styles={redTheme}
+          onChange={value => {
+            this.setState({ cca2: value.cca2, callingCode: value.callingCode })
+          }}
+          cca2={this.state.cca2}
+          filterable
+          translation='eng'
+        />
+        </View>
         <TouchableOpacity style={styles.button} onPress={() => this.register()}>
-          <Text style={styles.txblack}>Register</Text>
+          <Text style={styles.txwhite}>Register</Text>
         </TouchableOpacity>
         <View style={{flexDirection: 'row'}}>
           <Text style={styles.txgrey}>Already have an account?  </Text>
           <TouchableOpacity onPress={() => this.props.navigation.navigate('Login')}>
-            <Text style={styles.txwhite}>Login</Text>
+            <Text style={styles.txred}>Login</Text>
           </TouchableOpacity>
         </View>
       </View>
     )
   }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register)
 
 const styles = StyleSheet.create({
   container: {
@@ -72,15 +132,15 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     color: '#c3c3c3',
   },
-  txwhite: {
+  txred: {
     fontSize: 16,
     textAlign: 'left',
     color: '#ff3f40',
   },
-  txblack: {
+  txwhite: {
     fontSize: 16,
     textAlign: 'left',
-    color: 'black',
+    color: 'white',
     fontWeight: 'bold',
   },
   form: {
@@ -92,8 +152,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     backgroundColor: 'transparent',
     borderColor: '#ff3f40',
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 10,
+    marginBottom: 10,
     padding: 10
   },
   icon: {
@@ -108,5 +168,38 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
     marginTop: 20
+  },
+  notif: {
+    color: 'black',
+    fontSize: 12
+  }
+})
+
+const redTheme = StyleSheet.create({
+  modalContainer: {
+    backgroundColor: DARK_COLOR
+  },
+  contentContainer: {
+    backgroundColor: DARK_COLOR
+  },
+  header: {
+    backgroundColor: DARK_COLOR
+  },
+  itemCountryName: {
+    borderBottomWidth: 0
+  },
+  countryName: {
+    color: LIGHT_COLOR
+  },
+  letterText: {
+    color: LIGHT_COLOR
+  },
+  input: {
+    color: LIGHT_COLOR,
+    borderBottomWidth: 1,
+    borderColor: LIGHT_COLOR
+  },
+  touchFlag: {
+    marginLeft: 50
   },
 })
