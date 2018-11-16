@@ -3,11 +3,12 @@ import React, {Component, Fragment} from 'react'
 import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity, Image, AsyncStorage} from 'react-native'
 import { connect } from 'react-redux'
 import LoginAction from '../store/actions/login'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 const mapStateToProps = state => ({
   user: state.authReducer.user,
   loading: state.authReducer.loading,
-  error: state.authReducer.error
+  error: state.authReducer.errlog
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -19,8 +20,17 @@ class Login extends Component {
     super(props)
     this.state = {
       email: '',
-      password: ''
+      password: '',
+      eyeview: false,
+      secure: true
     }
+  }
+
+  toggleEye() {
+    this.setState({
+      eyeview: !this.state.eyeview,
+      secure: !this.state.secure
+    })
   }
 
   login = async() => {
@@ -33,6 +43,7 @@ class Login extends Component {
       if(data) {
         let user = await AsyncStorage.getItem('user')
         if (user) {
+          console.log('user',user)
           this.setState({ email: '', password: '' })
           this.props.navigation.navigate('Chat')
         }
@@ -58,11 +69,25 @@ class Login extends Component {
           value={this.state.email}
           placeholder='Input your email'
           onChangeText={(email) => this.setState({email})}/>
+        <View style={styles.passbox}>
         <TextInput
-          style={styles.form}
+          secureTextEntry={this.state.secure}
+          style={styles.passform}
           value={this.state.password}
           placeholder='Input your password'
           onChangeText={(password) => this.setState({password})}/>
+        {
+          this.state.eyeview ? (
+            <TouchableOpacity onPress={() => this.toggleEye()}>
+              <Icon name='eye-slash' size={20} style={styles.passicon}/>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={() => this.toggleEye()}>
+              <Icon name='eye' size={20} style={styles.passicon}/>
+            </TouchableOpacity>
+          )
+        }
+        </View>
         <TouchableOpacity style={styles.button} onPress={() => this.login()}>
           <Text style={styles.txwhite}>Login</Text>
         </TouchableOpacity>
@@ -123,6 +148,27 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     padding: 10
+  },
+  passform: {
+    textAlign: 'left',
+    color: '#ff3f40',
+    width: 210,
+    height: 40,
+    padding: 10
+  },
+  passbox: {
+    flexDirection: 'row',
+    fontSize: 15,
+    borderWidth: 1,
+    backgroundColor: 'transparent',
+    borderColor: '#ff3f40',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  passicon: {
+    margin: 5,
+    marginRight: 15,
+    marginTop: 8
   },
   icon: {
     fontSize: 16,

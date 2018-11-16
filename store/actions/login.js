@@ -9,7 +9,7 @@ export default function(email, password) {
       })
       axios({
         method: 'POST',
-        url: 'http://192.168.0.196:3023/user/login',
+        url: 'https://apileksabot23.efratsadeli.online/user/login',
         data: {
           email: email,
           password: password
@@ -24,10 +24,11 @@ export default function(email, password) {
         resolve(response.data)
       })
       .catch((error) => {
-        reject(error.response.data.err)
+        let err = error.response.data.err || error.response.data.msg
+        reject(err)
         dispatch({
           type: 'LOGIN_ERROR',
-          payload: error.response.data.err
+          payload: err
         })
         setTimeout(function(){
           dispatch({

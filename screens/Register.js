@@ -4,6 +4,7 @@ import CountryPicker from 'react-native-country-picker-modal'
 import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity, Image, AsyncStorage} from 'react-native'
 import RegAction from '../store/actions/register'
 import { connect } from 'react-redux'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 const DARK_COLOR = '#ff3f40'
 const PLACEHOLDER_COLOR = 'rgba(255,255,255,0.2)'
@@ -12,7 +13,8 @@ const LIGHT_COLOR = '#fff'
 const mapStateToProps = state => ({
   user: state.authReducer.user,
   loading: state.authReducer.loading,
-  error: state.authReducer.error
+  erremail: state.authReducer.erremail,
+  errpass: state.authReducer.errpass
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -27,8 +29,17 @@ class Register extends Component {
       email: '',
       password: '',
       cca2: 'ID',
-      callingCode: ''
+      callingCode: '',
+      eyeview: false,
+      secure: true
     }
+  }
+
+  toggleEye() {
+    this.setState({
+      eyeview: !this.state.eyeview,
+      secure: !this.state.secure
+    })
   }
 
   register = async() => {
@@ -58,16 +69,13 @@ class Register extends Component {
           source={require('../assets/bot.png')}
         />
         <Text style={styles.welcome}>Register</Text>
-        {
-          this.props.error.name && <Text style={styles.notif}>{this.props.error.name.message}</Text>
-        }
         <TextInput
           style={styles.form}
           value={this.state.name}
           placeholder='Input your name'
           onChangeText={(name) => this.setState({name})}/>
         {
-          this.props.error.email && <Text style={styles.notif}>{this.props.error.email.message}</Text>
+          this.props.erremail && <Text style={styles.notif}>{this.props.erremail}</Text>
         }
         <TextInput
           style={styles.form}
@@ -75,13 +83,27 @@ class Register extends Component {
           placeholder='Input your email'
           onChangeText={(email) => this.setState({email})}/>
         {
-          this.props.error.password && <Text style={styles.notif}>{this.props.error.password.message}</Text>
+          this.props.errpass && <Text style={styles.notif}>{this.props.errpass}</Text>
         }
+        <View style={styles.passbox}>
         <TextInput
-          style={styles.form}
+          secureTextEntry={this.state.secure}
+          style={styles.passform}
           value={this.state.password}
           placeholder='Input your password'
           onChangeText={(password) => this.setState({password})}/>
+        {
+          this.state.eyeview ? (
+            <TouchableOpacity onPress={() => this.toggleEye()}>
+              <Icon name='eye-slash' size={25} style={styles.passicon}/>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={() => this.toggleEye()}>
+              <Icon name='eye' size={25} style={styles.passicon}/>
+            </TouchableOpacity>
+          )
+        }
+        </View>
         <View style={{flexDirection: 'row', width: 250}}>
           <Text style={{alignItems: 'flex-start', textAlign: 'left'}}>Choose mother language</Text>
           <CountryPicker
@@ -155,6 +177,27 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
     padding: 10
+  },
+  passform: {
+    textAlign: 'left',
+    color: '#ff3f40',
+    width: 210,
+    height: 40,
+    padding: 10
+  },
+  passbox: {
+    flexDirection: 'row',
+    fontSize: 15,
+    borderWidth: 1,
+    backgroundColor: 'transparent',
+    borderColor: '#ff3f40',
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  passicon: {
+    margin: 5,
+    marginRight: 15,
+    marginTop: 8
   },
   icon: {
     fontSize: 16,

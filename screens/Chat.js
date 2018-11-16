@@ -41,7 +41,7 @@ export default class Chat extends Component {
       }]
     }, () => {
       axios({
-        url: 'http://192.168.43.94:3023/df',
+        url: 'https://apileksabot23.efratsadeli.online/df/',
         method: 'post',
         data: {
           message: this.state.newMsg,

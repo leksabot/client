@@ -1,7 +1,9 @@
 const defaultState = {
   loading: false,
   user: {},
-  error: false
+  errlog: false,
+  erremail: false,
+  errpass: false
 }
 
 const authReducer = (state = defaultState, action) => {
@@ -20,7 +22,7 @@ const authReducer = (state = defaultState, action) => {
     case 'LOGIN_ERROR':
       return {
         ...state,
-        error: action.payload,
+        errlog: action.payload,
         loading: false
       }
     case 'REG_LOADING':
@@ -37,13 +39,16 @@ const authReducer = (state = defaultState, action) => {
     case 'REG_ERROR':
       return {
         ...state,
-        error: action.payload,
+        erremail: action.payload_email,
+        errpass: action.payload_pass,
         loading: false
       }
     case 'CLEAR_LOG_ERROR':
       return {
         ...state,
-        error: false       
+        errlog: false,
+        erremail: false,
+        errpass: false
       }
     case 'LOGOUT_SUCCESS':
       return {

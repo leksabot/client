@@ -32,14 +32,14 @@ const RootStack = createStackNavigator(
   {
     'Splash': Splash,
     'Language': Language,
-    'Chat': Chat,
+    // 'Chat': Chat,
     'Menu': SidebarStack,
     'Login': LoginStack,
     'Register': RegisterStack,
     'HangmanGame' : HangMan
   },
   {
-    initialRouteName: 'Chat',
+    initialRouteName: 'Splash',
     headerMode: 'none'
   }
 )
