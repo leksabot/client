@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Dimensions, AsyncStorage} from 'react-native'
 import axios from 'axios'
+import Upload from '../components/Upload'
 
 export default class Chat extends Component {
 
@@ -84,15 +85,18 @@ export default class Chat extends Component {
                         <Text style={styles[`text${messsage.user}`]}>{ item }</Text>
                       </TouchableOpacity>
                     }
+                    keyExtractor={(item, index) => index.toString()}
                   />
                   <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
                 </View>
               )
             }}
+            key keyExtractor={(item, index) => index.toString()}
           />
         </View>
         <View style={styles.inputBox}>
           <TextInput style={styles.input} onChangeText={(text) => {this.changeValue('newMsg', text)}} value={this.state.newMsg} placeholder='Say something to Leksa' />
+          <Upload />
           <TouchableOpacity style={styles.send} onPress={() => this.sendMsg()} >
             <Icon name='paper-plane' size={20} color='#FF3F04'/>
           </TouchableOpacity>
@@ -130,7 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '15%',
-    height: 44,
+    height: 44
   },
   bubble1: {
     flex: 1,
