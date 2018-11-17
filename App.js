@@ -53,7 +53,6 @@ const RootStack = createStackNavigator(
   {
     'Splash': Splash,
     'Language': Language,
-    // 'Chat': Chat,
     'Menu': SidebarStack,
     'Login': LoginStack,
     'Register': RegisterStack,
