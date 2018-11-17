@@ -132,7 +132,8 @@ export default class Chat extends Component {
   }
 
   translate(item) {
-    if (item[item.length - 1] === '?' || item[item.length - 1] === '!') {
+    let regex = new RegExp(/[A-Za-z0-9]/)
+    if (!regex.test(item[item.length - 1])) {
       item = item.slice(0, item.length - 1).toLowerCase()
     } else {
       item = item.toLowerCase()
@@ -176,14 +177,16 @@ export default class Chat extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={{flex: 9, marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 10}}>
+        <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 10}}>
           <FlatList
             ref={(ref) => {this.flatListRef = ref}}
             getItemLayout={(data, index) => (
-              {length: 200, offset: 200 * index, index}
+              {length: 100, offset: 100 * index, index}
             )}
             onLayout={() => {
-              this.flatListSTE()
+              setTimeout(() => {
+                this.flatListSTE()
+              }, 100)
             }}
             data={this.state.messages}
             renderItem={({item}) => {
