@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Provider } from 'react-redux'
 import store from './store/index'
-import { createStackNavigator, createDrawerNavigator } from 'react-navigation'
+import { createStackNavigator, createDrawerNavigator, createTabNavigator } from 'react-navigation'
 import { StyleSheet, Dimensions, BackHandler, Alert } from 'react-native'
 import Splash from './screens/Splash'
 import Language from './screens/Language'
@@ -34,13 +34,17 @@ const FrChat = () => {
   )
 }
 
-const LangChatStack = createDrawerNavigator({'English': EnChat, 'Français': FrChat}, {
-  contentComponent: SidebarComponent,
-  drawerWidth: Dimensions.get('window').width - 130,
+const LangNav = createTabNavigator({
+  'English': EnChat,
+  'Français': FrChat
+}, {
+  navigationOptions: {
+    tabBarVisible: false
+  }
 })
 
 // sidebar for chat and game
-const SidebarStack = createDrawerNavigator({'Chat': LangChatStack, 'Game': Game}, {
+const SidebarStack = createDrawerNavigator({'Chat': LangNav, 'Game': Game}, {
   contentComponent: SidebarComponent,
   drawerWidth: Dimensions.get('window').width - 130,
 })
