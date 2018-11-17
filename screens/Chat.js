@@ -11,7 +11,6 @@ export default class Chat extends Component {
     this.state = {
       newMsg: '',
       messages: [],
-      langcode: this.props.langcode,
       motherlang: '',
       inputHeight: 45,
       translateModal: false,
@@ -22,7 +21,7 @@ export default class Chat extends Component {
   }
 
   componentDidMount() {
-    AsyncStorage.getItem(`messages-${this.state.langcode}`)
+    AsyncStorage.getItem(`messages-${this.props.langcode}`)
     .then(messages => {
       if (messages) {
         this.setState({
@@ -108,7 +107,7 @@ export default class Chat extends Component {
         method: 'post',
         data: {
           message: msgCopy,
-          langcode: this.state.langcode
+          langcode: this.props.langcode
         }
       })
       .then(({data}) => {
@@ -122,7 +121,7 @@ export default class Chat extends Component {
           setTimeout(() => {
             this.flatListSTE()
           }, 100)
-          AsyncStorage.setItem(`messages-${this.state.langcode}`, JSON.stringify(this.state.messages))
+          AsyncStorage.setItem(`messages-${this.props.langcode}`, JSON.stringify(this.state.messages))
         })
       })
       .catch(err => {
@@ -144,7 +143,7 @@ export default class Chat extends Component {
       data: {
         text: item,
         motherlanguage: this.state.motherlang,
-        originalLanguage: this.state.langcode
+        originalLanguage: this.props.langcode
       }
     })
     let define = axios({
@@ -210,7 +209,7 @@ export default class Chat extends Component {
           />
         </View>
         <View style={[styles.inputBox, {height: Math.max(50, this.state.inputHeight + 3)}]}>
-          <TextInput style={[styles.input, {height: Math.max(44, this.state.inputHeight + 3)}]} multiline={true} onChangeText={(text) => {this.changeValue('newMsg', text)}} onContentSizeChange={({ nativeEvent }) => {this.changeValue('inputHeight', nativeEvent.contentSize.height)}} value={this.state.newMsg} placeholder={this.state.langcode === 'en' ? 'Say something to Leksa' : 'Dites quelque chose à Leksa'} />
+          <TextInput style={[styles.input, {height: Math.max(44, this.state.inputHeight + 3)}]} multiline={true} onChangeText={(text) => {this.changeValue('newMsg', text)}} onContentSizeChange={({ nativeEvent }) => {this.changeValue('inputHeight', nativeEvent.contentSize.height)}} value={this.state.newMsg} placeholder={this.props.langcode === 'en' ? 'Say something to Leksa' : 'Dites quelque chose à Leksa'} />
           { this.state.newMsg.length > 0 ?
             <TouchableOpacity style={[styles.send, {height: Math.max(44, this.state.inputHeight + 3)}]} onPress={() => this.sendMsg()} >
               <Icon name='paper-plane' size={20} color='#FF3F04'/>
@@ -226,7 +225,7 @@ export default class Chat extends Component {
         >
           <View style={{marginTop: 20}}>
             <View>
-              <Text style={{fontSize: 40, padding: 10, marginHorizontal: 30, marginVertical: 10, borderBottomWidth: 1}}>{ this.state.translateOriText } <Text style={{fontSize: 20}}>({ this.state.langcode })</Text></Text>
+              <Text style={{fontSize: 40, padding: 10, marginHorizontal: 30, marginVertical: 10, borderBottomWidth: 1}}>{ this.state.translateOriText } <Text style={{fontSize: 20}}>({ this.props.langcode })</Text></Text>
               <Text style={{fontSize: 25, padding: 5, marginHorizontal: 30, marginVertical: 10}}>{ this.state.translatedText } <Text style={{fontSize: 15}}>({ this.state.motherlang.toLowerCase() })</Text></Text>
               { this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
               { this.state.definition.map((def, index) =>
