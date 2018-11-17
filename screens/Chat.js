@@ -6,17 +6,25 @@ import Upload from '../components/Upload'
 
 export default class Chat extends Component {
 
-  state = {
-    newMsg: '',
-    messages: []
+  constructor(props) {
+    super(props)
+    this.state = {
+      newMsg: '',
+      messages: [],
+      langcode: this.props.langcode
+    }
   }
 
   componentDidMount() {
-    AsyncStorage.getItem('messages')
+    AsyncStorage.getItem(`messages-${this.state.langcode}`)
     .then(messages => {
       if (messages) {
         this.setState({
           messages: JSON.parse(messages)
+        }, () => {
+          setTimeout(() => {
+            this.flatListSTE()
+          }, 100)
         })
       }
     })
@@ -31,6 +39,10 @@ export default class Chat extends Component {
     }, cb)
   }
 
+  flatListSTE () {
+    this.flatListRef.scrollToEnd()
+  }
+
   sendMsg() {
     let date = new Date()
     this.setState({
@@ -38,14 +50,15 @@ export default class Chat extends Component {
         text: this.state.newMsg,
         time: date.getHours() + ':' + date.getMinutes(),
         user: 1
-      }]
+      }],
+      newMsg: ''
     }, () => {
       axios({
         url: 'https://apileksabot23.efratsadeli.online/df/',
         method: 'post',
         data: {
           message: this.state.newMsg,
-          langcode: 'en'
+          langcode: this.state.langcode
         }
       })
       .then(({data}) => {
@@ -55,10 +68,10 @@ export default class Chat extends Component {
             text: data.reply,
             time: date.getHours() + ':' + date.getMinutes(),
             user: 2
-          }],
-          newMsg: ''
+          }]
         }, () => {
-          AsyncStorage.setItem('messages', JSON.stringify(this.state.messages))
+          this.flatListSTE()
+          AsyncStorage.setItem(`messages-${this.state.langcode}`, JSON.stringify(this.state.messages))
         })
       })
       .catch(err => {
@@ -71,13 +84,16 @@ export default class Chat extends Component {
     return (
       <View style={styles.container}>
         <View style={{flex: 9, marginBottom: 50, marginTop: 10}}>
-          <FlatList 
+          <FlatList
+            ref={(ref) => {this.flatListRef = ref}}
+            getItemLayout={(data, index) => (
+              {length: 80, offset: 80 * index, index}
+            )}
             data={this.state.messages}
             renderItem={({item}) => {
               let messsage = item
               return (
                 <View style={styles[`bubble${messsage.user}`]}>
-                  {/* <Text style={styles[`text${item.user}`]}>{ item.text }</Text> */}
                   <FlatList style={[{flexDirection: 'row'}, styles[`bubbleText${messsage.user}`]]}
                     data = {messsage.text.split(' ')}
                     renderItem={({ item }) =>
@@ -96,10 +112,12 @@ export default class Chat extends Component {
         </View>
         <View style={styles.inputBox}>
           <TextInput style={styles.input} onChangeText={(text) => {this.changeValue('newMsg', text)}} value={this.state.newMsg} placeholder='Say something to Leksa' />
-          <Upload />
-          <TouchableOpacity style={styles.send} onPress={() => this.sendMsg()} >
-            <Icon name='paper-plane' size={20} color='#FF3F04'/>
-          </TouchableOpacity>
+          { this.state.newMsg.length > 0 ?
+            <TouchableOpacity style={styles.send} onPress={() => this.sendMsg()} >
+              <Icon name='paper-plane' size={20} color='#FF3F04'/>
+            </TouchableOpacity>
+            : <Upload />
+          }
         </View>
       </View>
     )
@@ -119,7 +137,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     height: 50,
-    borderWidth: 3,
+    borderTopWidth: 2,
     borderColor: '#FF3F04',
     backgroundColor: 'white'
   },
