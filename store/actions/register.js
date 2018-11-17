@@ -9,7 +9,7 @@ export default function(name, email, password, language) {
       })
       axios({
         method: 'POST',
-        url: 'http://192.168.0.196:3023/user/register',
+        url: 'https://apileksabot23.efratsadeli.online/user/register',
         data: {
           name: name,
           email: email,
@@ -27,9 +27,17 @@ export default function(name, email, password, language) {
       })
       .catch((error) => {
         reject(error.response.data.err)
+        let erremail, errpass, inmail, inpass
+        erremail = error.response.data.err.errors.email
+        errpass = error.response.data.err.errors.password
+        if (!erremail) inmail = null
+        else inmail = erremail.message
+        if (!errpass) inpass = null
+        else inpass = errpass.message
         dispatch({
           type: 'REG_ERROR',
-          payload: error.response.data.err.errors
+          payload_email: inmail,
+          payload_pass: inpass
         })
         setTimeout(function(){
           dispatch({
