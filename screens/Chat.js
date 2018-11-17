@@ -102,7 +102,7 @@ export default class Chat extends Component {
       data: {
         text: input,
         originalLanguage: 'en',
-        motherlanguage: 'id'
+        motherlanguage: this.state.langcode
       }
     })
     .then((response) => {
