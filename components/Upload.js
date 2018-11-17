@@ -51,7 +51,7 @@ export default class Upload extends Component {
           onPress={() => {
             this.pickImage()
           }}>
-          <Icon name='camera' size={25} color='#FF3F04'/>
+          <Icon name='camera' size={20} color='#FF3F04'/>
         </TouchableOpacity>
       </Fragment>
     )
@@ -60,10 +60,12 @@ export default class Upload extends Component {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: 'transparent',
-    padding: 10,
-    // position: 'absolute',
-    // right: 45,
-    // bottom: 0
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '15%',
+    height: 44,
+    paddingRight: 0,
+    marginRight: -20
   },
 })

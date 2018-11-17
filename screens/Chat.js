@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {StyleSheet, Text, View, Image, TextInput, TouchableOpacity, FlatList, Dimensions, AsyncStorage} from 'react-native'
+import {StyleSheet, Text, View, Modal, TextInput, TouchableOpacity, Alert, FlatList, Dimensions, AsyncStorage} from 'react-native'
 import axios from 'axios'
 import Upload from '../components/Upload'
 
@@ -11,7 +11,9 @@ export default class Chat extends Component {
     this.state = {
       newMsg: '',
       messages: [],
-      langcode: this.props.langcode
+      langcode: this.props.langcode,
+      searchVisible: false,
+      translation: ''
     }
   }
 
@@ -31,6 +33,19 @@ export default class Chat extends Component {
     .catch(err => {
       alert(err)
     })
+  }
+
+  toggleSearch(input) {
+    if (this.state.searchVisible) {
+      this.setState({
+        searchVisible: false
+      })
+    } else {
+      this.translate(input)
+      this.setState({
+        searchVisible: true
+      })
+    }
   }
 
   changeValue(state, value, cb) {
@@ -80,9 +95,46 @@ export default class Chat extends Component {
     })
   }
 
+  translate(input) {
+    axios({
+      url: 'https://apileksabot23.efratsadeli.online/translate/from',
+      method: 'post',
+      data: {
+        text: input,
+        originalLanguage: 'en',
+        motherlanguage: this.state.langcode
+      }
+    })
+    .then((response) => {
+      console.log('translation', response)   
+      this.setState({
+        translation: response.data.data
+      })
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }
+
+
   render() {
     return (
       <View style={styles.container}>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.searchVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.')
+          }}>
+          <Text>{this.state.translation.originalText}</Text>
+          <Text>{this.state.translation.translatedText}</Text>
+          <TouchableOpacity
+            style={{backgroundColor: 'red'}}
+            onPress={() => this.toggleSearch()}>
+            <Text>Back</Text>
+          </TouchableOpacity>
+        </Modal>
         <View style={{flex: 9, marginBottom: 50, marginTop: 10}}>
           <FlatList
             ref={(ref) => {this.flatListRef = ref}}
@@ -97,7 +149,9 @@ export default class Chat extends Component {
                   <FlatList style={[{flexDirection: 'row'}, styles[`bubbleText${messsage.user}`]]}
                     data = {messsage.text.split(' ')}
                     renderItem={({ item }) =>
-                      <TouchableOpacity style={ messsage.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                      <TouchableOpacity
+                        style={ messsage.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}
+                        onPress={() => this.toggleSearch(item)}>
                         <Text style={styles[`text${messsage.user}`]}>{ item }</Text>
                       </TouchableOpacity>
                     }
@@ -152,7 +206,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '15%',
-    height: 44
+    height: 44,
   },
   bubble1: {
     flex: 1,
