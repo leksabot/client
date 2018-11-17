@@ -64,67 +64,69 @@ class Register extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          style={{width: 180, height: 180}}
-          source={require('../assets/bot.png')}
-        />
-        <Text style={styles.welcome}>Register</Text>
-        <TextInput
-          style={styles.form}
-          value={this.state.name}
-          placeholder='Input your name'
-          onChangeText={(name) => this.setState({name})}/>
-        {
-          this.props.erremail && <Text style={styles.notif}>{this.props.erremail}</Text>
-        }
-        <TextInput
-          style={styles.form}
-          value={this.state.email}
-          placeholder='Input your email'
-          onChangeText={(email) => this.setState({email})}/>
-        {
-          this.props.errpass && <Text style={styles.notif}>{this.props.errpass}</Text>
-        }
-        <View style={styles.passbox}>
-        <TextInput
-          secureTextEntry={this.state.secure}
-          style={styles.passform}
-          value={this.state.password}
-          placeholder='Input your password'
-          onChangeText={(password) => this.setState({password})}/>
-        {
-          this.state.eyeview ? (
-            <TouchableOpacity onPress={() => this.toggleEye()}>
-              <Icon name='eye-slash' size={25} style={styles.passicon}/>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={() => this.toggleEye()}>
-              <Icon name='eye' size={25} style={styles.passicon}/>
-            </TouchableOpacity>
-          )
-        }
-        </View>
-        <View style={{flexDirection: 'row', width: 250}}>
-          <Text style={{alignItems: 'flex-start', textAlign: 'left'}}>Choose mother language</Text>
-          <CountryPicker
-          filterPlaceholderTextColor={PLACEHOLDER_COLOR}
-          styles={redTheme}
-          onChange={value => {
-            this.setState({ cca2: value.cca2, callingCode: value.callingCode })
-          }}
-          cca2={this.state.cca2}
-          filterable
-          translation='eng'
-        />
-        </View>
-        <TouchableOpacity style={styles.button} onPress={() => this.register()}>
-          <Text style={styles.txwhite}>Register</Text>
-        </TouchableOpacity>
-        <View style={{flexDirection: 'row'}}>
-          <Text style={styles.txgrey}>Already have an account?  </Text>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('Login')}>
-            <Text style={styles.txred}>Login</Text>
+        <View style={styles.subcontainer}>
+          <Image
+            style={{width: 180, height: 180}}
+            source={require('../assets/bot.png')}
+          />
+          <Text style={styles.welcome}>Register</Text>
+          <TextInput
+            style={styles.form}
+            value={this.state.name}
+            placeholder='Input your name'
+            onChangeText={(name) => this.setState({name})}/>
+          {
+            this.props.erremail && <Text style={styles.notif}>{this.props.erremail}</Text>
+          }
+          <TextInput
+            style={styles.form}
+            value={this.state.email}
+            placeholder='Input your email'
+            onChangeText={(email) => this.setState({email})}/>
+          {
+            this.props.errpass && <Text style={styles.notif}>{this.props.errpass}</Text>
+          }
+          <View style={styles.passbox}>
+          <TextInput
+            secureTextEntry={this.state.secure}
+            style={styles.passform}
+            value={this.state.password}
+            placeholder='Input your password'
+            onChangeText={(password) => this.setState({password})}/>
+          {
+            this.state.eyeview ? (
+              <TouchableOpacity onPress={() => this.toggleEye()}>
+                <Icon name='eye-slash' size={20} style={styles.passicon}/>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={() => this.toggleEye()}>
+                <Icon name='eye' size={20} style={styles.passicon}/>
+              </TouchableOpacity>
+            )
+          }
+          </View>
+          <View style={{flexDirection: 'row', width: 250}}>
+            <Text style={{alignItems: 'flex-start', textAlign: 'left'}}>Choose mother language</Text>
+            <CountryPicker
+            filterPlaceholderTextColor={PLACEHOLDER_COLOR}
+            styles={redTheme}
+            onChange={value => {
+              this.setState({ cca2: value.cca2, callingCode: value.callingCode })
+            }}
+            cca2={this.state.cca2}
+            filterable
+            translation='eng'
+          />
+          </View>
+          <TouchableOpacity style={styles.button} onPress={() => this.register()}>
+            <Text style={styles.txwhite}>Register</Text>
           </TouchableOpacity>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.txgrey}>Already have an account?  </Text>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('Login')}>
+              <Text style={styles.txred}>Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     )
@@ -138,9 +140,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f2f6ff',
+  },
+  subcontainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'white',
-    paddingBottom: 50,
-    paddingTop: 50
+    paddingHorizontal: 30,
+    paddingVertical: 30,
+    borderRadius: 10
   },
   welcome: {
     fontSize: 35,
@@ -171,7 +179,7 @@ const styles = StyleSheet.create({
     width: 250,
     height: 40,
     fontSize: 15,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     backgroundColor: 'transparent',
     borderColor: '#ff3f40',
     marginTop: 10,
@@ -188,7 +196,7 @@ const styles = StyleSheet.create({
   passbox: {
     flexDirection: 'row',
     fontSize: 15,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     backgroundColor: 'transparent',
     borderColor: '#ff3f40',
     marginTop: 10,
@@ -204,7 +212,7 @@ const styles = StyleSheet.create({
     color: '#ff3f40'
   },
   button: {
-    width: '60%',
+    width: 245,
     alignItems: 'center',
     backgroundColor: '#ff3f40',
     color: 'black',

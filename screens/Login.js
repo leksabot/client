@@ -41,9 +41,10 @@ class Login extends Component {
     try {
       let data = await this.props.logging(email, password)
       if(data) {
+        // console.log('data',data) //ini
         let user = await AsyncStorage.getItem('user')
         if (user) {
-          console.log('user',user)
+          // console.log('user',user) //ini
           this.setState({ email: '', password: '' })
           this.props.navigation.navigate('Chat')
         }
@@ -56,46 +57,48 @@ class Login extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Image
-          style={{width: 180, height: 180}}
-          source={require('../assets/bot.png')}
-        />
-        <Text style={styles.welcome}>Login</Text>
-        {
-          this.props.error && <Text style={styles.notif}>{this.props.error}</Text>
-        }
-        <TextInput
-          style={styles.form}
-          value={this.state.email}
-          placeholder='Input your email'
-          onChangeText={(email) => this.setState({email})}/>
-        <View style={styles.passbox}>
-        <TextInput
-          secureTextEntry={this.state.secure}
-          style={styles.passform}
-          value={this.state.password}
-          placeholder='Input your password'
-          onChangeText={(password) => this.setState({password})}/>
-        {
-          this.state.eyeview ? (
-            <TouchableOpacity onPress={() => this.toggleEye()}>
-              <Icon name='eye-slash' size={20} style={styles.passicon}/>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={() => this.toggleEye()}>
-              <Icon name='eye' size={20} style={styles.passicon}/>
-            </TouchableOpacity>
-          )
-        }
-        </View>
-        <TouchableOpacity style={styles.button} onPress={() => this.login()}>
-          <Text style={styles.txwhite}>Login</Text>
-        </TouchableOpacity>
-        <View style={{flexDirection: 'row'}}>
-          <Text style={styles.txgrey}> Do not have an account?  </Text>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('Register')}>
-              <Text style={styles.txred}>Register</Text>
+        <View style={styles.subcontainer}>
+          <Image
+            style={{width: 180, height: 180}}
+            source={require('../assets/bot.png')}
+          />
+          <Text style={styles.welcome}>Login</Text>
+          {
+            this.props.error && <Text style={styles.notif}>{this.props.error}</Text>
+          }
+          <TextInput
+            style={styles.form}
+            value={this.state.email}
+            placeholder='Input your email'
+            onChangeText={(email) => this.setState({email})}/>
+          <View style={styles.passbox}>
+          <TextInput
+            secureTextEntry={this.state.secure}
+            style={styles.passform}
+            value={this.state.password}
+            placeholder='Input your password'
+            onChangeText={(password) => this.setState({password})}/>
+          {
+            this.state.eyeview ? (
+              <TouchableOpacity onPress={() => this.toggleEye()}>
+                <Icon name='eye-slash' size={20} style={styles.passicon}/>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={() => this.toggleEye()}>
+                <Icon name='eye' size={20} style={styles.passicon}/>
+              </TouchableOpacity>
+            )
+          }
+          </View>
+          <TouchableOpacity style={styles.button} onPress={() => this.login()}>
+            <Text style={styles.txwhite}>Login</Text>
           </TouchableOpacity>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.txgrey}> Do not have an account?  </Text>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('Register')}>
+                <Text style={styles.txred}>Register</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     )
@@ -109,9 +112,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f2f6ff',
+  },
+  subcontainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'white',
-    paddingBottom: 50,
-    paddingTop: 50
+    paddingHorizontal: 30,
+    paddingVertical: 30,
+    borderRadius: 10
   },
   welcome: {
     fontSize: 35,
@@ -142,7 +151,7 @@ const styles = StyleSheet.create({
     width: 250,
     height: 40,
     fontSize: 15,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     backgroundColor: 'transparent',
     borderColor: '#ff3f40',
     marginTop: 10,
@@ -159,7 +168,7 @@ const styles = StyleSheet.create({
   passbox: {
     flexDirection: 'row',
     fontSize: 15,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     backgroundColor: 'transparent',
     borderColor: '#ff3f40',
     marginTop: 10,
@@ -175,7 +184,7 @@ const styles = StyleSheet.create({
     color: '#ff3f40'
   },
   button: {
-    width: '60%',
+    width: 245,
     alignItems: 'center',
     backgroundColor: '#ff3f40',
     color: 'black',
