@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {StyleSheet, Text, View, Modal, TextInput, TouchableOpacity, Alert, FlatList, Dimensions, AsyncStorage} from 'react-native'
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Dimensions, AsyncStorage, Modal} from 'react-native'
 import axios from 'axios'
 import Upload from '../components/Upload'
 
@@ -12,8 +12,12 @@ export default class Chat extends Component {
       newMsg: '',
       messages: [],
       langcode: this.props.langcode,
-      searchVisible: false,
-      translation: ''
+      motherlang: '',
+      inputHeight: 45,
+      translateModal: false,
+      translateOriText: '',
+      translatedText: '',
+      definition: []
     }
   }
 
@@ -27,6 +31,18 @@ export default class Chat extends Component {
           setTimeout(() => {
             this.flatListSTE()
           }, 100)
+        })
+      }
+    })
+    .catch(err => {
+      alert(err)
+    })
+
+    AsyncStorage.getItem(`user`)
+    .then(user => {
+      if (user) {
+        this.setState({
+          motherlang: JSON.parse(user).lang
         })
       }
     })
@@ -49,6 +65,9 @@ export default class Chat extends Component {
   }
 
   changeValue(state, value, cb) {
+    if(!value) {
+      value = !this.state[state]
+    }
     this.setState({
       [state]: value
     }, cb)
@@ -58,34 +77,51 @@ export default class Chat extends Component {
     this.flatListRef.scrollToEnd()
   }
 
-  sendMsg() {
+  getHourAndMinute() {
     let date = new Date()
+    let hour = String(date.getHours())
+    let minute = String(date.getMinutes())
+    if (hour.length < 2) {
+      hour = '0' + hour
+    }
+    if (minute.length < 2) {
+      minute = '0' + minute
+    }
+    return hour + ':' + minute
+  }
+
+  sendMsg() {
+    let msgCopy = this.state.newMsg.slice()
     this.setState({
       messages: [...this.state.messages, {
         text: this.state.newMsg,
-        time: date.getHours() + ':' + date.getMinutes(),
+        time: this.getHourAndMinute(),
         user: 1
       }],
       newMsg: ''
     }, () => {
+      setTimeout(() => {
+        this.flatListSTE()
+      }, 100)
       axios({
         url: 'https://apileksabot23.efratsadeli.online/df/',
         method: 'post',
         data: {
-          message: this.state.newMsg,
+          message: msgCopy,
           langcode: this.state.langcode
         }
       })
       .then(({data}) => {
-        let date = new Date()
         this.setState({
           messages: [...this.state.messages, {
             text: data.reply,
-            time: date.getHours() + ':' + date.getMinutes(),
+            time: this.getHourAndMinute(),
             user: 2
           }]
         }, () => {
-          this.flatListSTE()
+          setTimeout(() => {
+            this.flatListSTE()
+          }, 100)
           AsyncStorage.setItem(`messages-${this.state.langcode}`, JSON.stringify(this.state.messages))
         })
       })
@@ -95,52 +131,60 @@ export default class Chat extends Component {
     })
   }
 
-  translate(input) {
-    axios({
+  translate(item) {
+    if (item[item.length - 1] === '?' || item[item.length - 1] === '!') {
+      item = item.slice(0, item.length - 1).toLowerCase()
+    } else {
+      item = item.toLowerCase()
+    }
+    let translate = axios({
       url: 'https://apileksabot23.efratsadeli.online/translate/from',
       method: 'post',
       data: {
-        text: input,
-        originalLanguage: 'en',
-        motherlanguage: this.state.langcode
+        text: item,
+        motherlanguage: this.state.motherlang,
+        originalLanguage: this.state.langcode
       }
     })
-    .then((response) => {
-      console.log('translation', response)   
+    let define = axios({
+      url: 'http://192.168.0.108:3023/df/define',
+      method: 'post',
+      data: {
+        keyword: item,
+      }
+    })
+
+    Promise.all([translate, define])
+    .then(arr => {
+      let tData = arr[0].data.data
+      let definition = arr[1].data.reply
+      if (typeof definition === 'string') {
+        definition = []
+      }
       this.setState({
-        translation: response.data.data
+        translateModal: true,
+        translateOriText: tData.originalText,
+        translatedText: tData.translatedText.toLowerCase(),
+        definition: definition
       })
     })
     .catch(err => {
-      console.log(err)
+      alert(err)
     })
   }
-
 
   render() {
     return (
       <View style={styles.container}>
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.searchVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.')
-          }}>
-          <Text>{this.state.translation.originalText}</Text>
-          <Text>{this.state.translation.translatedText}</Text>
-          <TouchableOpacity
-            style={{backgroundColor: 'red'}}
-            onPress={() => this.toggleSearch()}>
-            <Text>Back</Text>
-          </TouchableOpacity>
-        </Modal>
-        <View style={{flex: 9, marginBottom: 50, marginTop: 10}}>
+        <View style={{flex: 9, marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 10}}>
           <FlatList
             ref={(ref) => {this.flatListRef = ref}}
             getItemLayout={(data, index) => (
-              {length: 80, offset: 80 * index, index}
+              {length: 200, offset: 200 * index, index}
             )}
+            onLayout={() => {
+              this.flatListSTE()
+            }}
             data={this.state.messages}
             renderItem={({item}) => {
               let messsage = item
@@ -149,9 +193,7 @@ export default class Chat extends Component {
                   <FlatList style={[{flexDirection: 'row'}, styles[`bubbleText${messsage.user}`]]}
                     data = {messsage.text.split(' ')}
                     renderItem={({ item }) =>
-                      <TouchableOpacity
-                        style={ messsage.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}
-                        onPress={() => this.toggleSearch(item)}>
+                      <TouchableOpacity onPress={() => {this.translate(item)}} style={ messsage.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
                         <Text style={styles[`text${messsage.user}`]}>{ item }</Text>
                       </TouchableOpacity>
                     }
@@ -164,15 +206,40 @@ export default class Chat extends Component {
             key keyExtractor={(item, index) => index.toString()}
           />
         </View>
-        <View style={styles.inputBox}>
-          <TextInput style={styles.input} onChangeText={(text) => {this.changeValue('newMsg', text)}} value={this.state.newMsg} placeholder='Say something to Leksa' />
+        <View style={[styles.inputBox, {height: Math.max(50, this.state.inputHeight + 3)}]}>
+          <TextInput style={[styles.input, {height: Math.max(44, this.state.inputHeight + 3)}]} multiline={true} onChangeText={(text) => {this.changeValue('newMsg', text)}} onContentSizeChange={({ nativeEvent }) => {this.changeValue('inputHeight', nativeEvent.contentSize.height)}} value={this.state.newMsg} placeholder={this.state.langcode === 'en' ? 'Say something to Leksa' : 'Dites quelque chose à Leksa'} />
           { this.state.newMsg.length > 0 ?
-            <TouchableOpacity style={styles.send} onPress={() => this.sendMsg()} >
+            <TouchableOpacity style={[styles.send, {height: Math.max(44, this.state.inputHeight + 3)}]} onPress={() => this.sendMsg()} >
               <Icon name='paper-plane' size={20} color='#FF3F04'/>
             </TouchableOpacity>
             : <Upload />
           }
         </View>
+
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.translateModal}
+        >
+          <View style={{marginTop: 20}}>
+            <View>
+              <Text style={{fontSize: 40, padding: 10, marginHorizontal: 30, marginVertical: 10, borderBottomWidth: 1}}>{ this.state.translateOriText } <Text style={{fontSize: 20}}>({ this.state.langcode })</Text></Text>
+              <Text style={{fontSize: 25, padding: 5, marginHorizontal: 30, marginVertical: 10}}>{ this.state.translatedText } <Text style={{fontSize: 15}}>({ this.state.motherlang.toLowerCase() })</Text></Text>
+              { this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
+              { this.state.definition.map((def, index) =>
+                <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
+              )}
+              <TouchableOpacity
+                onPress={() => {
+                  this.changeValue('translateModal');
+                }}
+                style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#FF3F04', width: '30%', height: 50, marginLeft: '35%', borderRadius: 15, marginTop: 50}}
+              >
+                <Text style={{color: 'white', textAlign: 'center', fontSize: 20}}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
     )
   }
@@ -190,23 +257,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    height: 50,
     borderTopWidth: 2,
     borderColor: '#FF3F04',
     backgroundColor: 'white'
   },
   input: {
-    flex: 4,
-    height: 44,
     fontSize: 15,
-    paddingHorizontal: 10
+    paddingLeft: 15,
+    width: Dimensions.get('window').width - 45,
   },
   send: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '15%',
-    height: 44,
+    width: 45
   },
   bubble1: {
     flex: 1,

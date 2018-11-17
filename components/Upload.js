@@ -60,12 +60,9 @@ export default class Upload extends Component {
 
 const styles = StyleSheet.create({
   button: {
-    flex: 1,
+    backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '15%',
-    height: 44,
-    paddingRight: 0,
-    marginRight: -20
+    width: 45
   },
 })
