@@ -17,11 +17,13 @@ export default function(email, password) {
       })
       .then((response) => {
         AsyncStorage.setItem('user', JSON.stringify(response.data))
-        dispatch({
-          type: 'LOGIN_SUCCESS',
-          payload: response.data
+        .then(() => {
+          dispatch({
+            type: 'LOGIN_SUCCESS',
+            payload: response.data
+          })
+          resolve(response.data)
         })
-        resolve(response.data)
       })
       .catch((error) => {
         let err = error.response.data.err || error.response.data.msg

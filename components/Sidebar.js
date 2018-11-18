@@ -1,6 +1,6 @@
 import React from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { StyleSheet, Dimensions, ScrollView, Image, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Dimensions, ScrollView, Image, Text, View, TouchableOpacity, AsyncStorage } from 'react-native'
 import { connect } from 'react-redux'
 import LogoutAction from '../store/actions/logout'
 
@@ -22,9 +22,18 @@ const toGame = (props) => (
   props.activeItemKey !== 'Game' && props.navigation.navigate('Game')
 )
 
-const logout = (props) => {
-  props.loggingout()
-  return props.navigation.navigate('Login')
+const logout = async (props) => {
+  try {
+    let data = await props.loggingout()
+    if (data) {
+      let user = await AsyncStorage.getItem('user')
+      if(!user) {
+        return props.navigation.navigate('Login')
+      }
+    }
+  } catch(e) {
+    alert(e)
+  }
 }
 
 const SidebarComponent = (props) => (
@@ -86,7 +95,7 @@ const styles = StyleSheet.create({
   navSection: {
     paddingLeft: 15,
     paddingVertical: 20,
-    backgroundColor: 'tomato',
+    backgroundColor: '#FF3F04',
     marginBottom: 10
   },
   menuSection: {
