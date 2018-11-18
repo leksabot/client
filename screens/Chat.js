@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Dimensions, AsyncStorage, Modal} from 'react-native'
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Dimensions, AsyncStorage, Modal, ActivityIndicator, Image} from 'react-native'
 import axios from 'axios'
 import Upload from '../components/Upload'
+import { NavigationEvents } from 'react-navigation'
 
 export default class Chat extends Component {
 
@@ -11,31 +12,19 @@ export default class Chat extends Component {
     this.state = {
       newMsg: '',
       messages: [],
-      motherlang: '',
+      motherlang: 'id',
       inputHeight: 45,
       translateModal: false,
       translateOriText: '',
       translatedText: '',
-      definition: []
+      definition: [],
+      loading: true
     }
   }
 
   componentDidMount() {
-    AsyncStorage.getItem(`messages-${this.props.langcode}`)
-    .then(messages => {
-      if (messages) {
-        this.setState({
-          messages: JSON.parse(messages)
-        }, () => {
-          setTimeout(() => {
-            this.flatListSTE()
-          }, 100)
-        })
-      }
-    })
-    .catch(err => {
-      alert(err)
-    })
+  
+    this.fetchMessages()
 
     AsyncStorage.getItem(`user`)
     .then(user => {
@@ -50,17 +39,22 @@ export default class Chat extends Component {
     })
   }
 
-  toggleSearch(input) {
-    if (this.state.searchVisible) {
-      this.setState({
-        searchVisible: false
-      })
-    } else {
-      this.translate(input)
-      this.setState({
-        searchVisible: true
-      })
-    }
+  fetchMessages () {
+    AsyncStorage.getItem(`messages-${this.props.langcode}`)
+    .then(messages => {
+      if (messages && this.state.messages !== JSON.parse(messages)) {
+        this.setState({
+          messages: JSON.parse(messages)
+        })
+      } else {
+        this.setState({
+          messages: []
+        })
+      }
+    })
+    .catch(err => {
+      alert(err)
+    })
   }
 
   changeValue(state, value, cb) {
@@ -74,6 +68,13 @@ export default class Chat extends Component {
 
   flatListSTE () {
     this.flatListRef.scrollToEnd()
+    if (this.state.loading) {
+      setTimeout(() => {
+        this.setState({
+          loading: false
+        })
+      }, this.state.messages.length * 100)
+    }
   }
 
   getHourAndMinute() {
@@ -115,13 +116,33 @@ export default class Chat extends Component {
           messages: [...this.state.messages, {
             text: data.reply,
             time: this.getHourAndMinute(),
-            user: 2
+            user: 2,
+            type: data.type
           }]
         }, () => {
-          setTimeout(() => {
-            this.flatListSTE()
-          }, 100)
-          AsyncStorage.setItem(`messages-${this.props.langcode}`, JSON.stringify(this.state.messages))
+          if (data.emotion) {
+            setTimeout(() => {
+              this.flatListSTE()
+            }, 100)
+            // alert(data.emotion)
+            this.setState({
+              messages: [...this.state.messages, {
+                text: data.emotion,
+                user: 2,
+                type: 'emotion'
+              }]
+            }, () => {
+              setTimeout(() => {
+                this.flatListSTE()
+              }, 100)
+              AsyncStorage.setItem(`messages-${this.props.langcode}`, JSON.stringify(this.state.messages))
+            })
+          } else {
+            setTimeout(() => {
+              this.flatListSTE()
+            }, 100)
+            AsyncStorage.setItem(`messages-${this.props.langcode}`, JSON.stringify(this.state.messages))
+          }
         })
       })
       .catch(err => {
@@ -177,10 +198,18 @@ export default class Chat extends Component {
     return (
       <View style={styles.container}>
         <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 10}}>
+          { this.state.loading && 
+            <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
+              <ActivityIndicator size={50} color="#FF3F04" /> 
+            </View>
+          }
+          <NavigationEvents
+            onDidBlur={() => this.fetchMessages()}
+          />
           <FlatList
             ref={(ref) => {this.flatListRef = ref}}
             getItemLayout={(data, index) => (
-              {length: 100, offset: 100 * index, index}
+              {length: 150, offset: 150 * index, index}
             )}
             onLayout={() => {
               setTimeout(() => {
@@ -188,21 +217,50 @@ export default class Chat extends Component {
               }, 100)
             }}
             data={this.state.messages}
-            renderItem={({item}) => {
-              let messsage = item
+            renderItem={({item, index}) => {
+              let message = item
               return (
-                <View style={styles[`bubble${messsage.user}`]}>
-                  <FlatList style={[{flexDirection: 'row'}, styles[`bubbleText${messsage.user}`]]}
-                    data = {messsage.text.split(' ')}
-                    renderItem={({ item }) =>
-                      <TouchableOpacity onPress={() => {this.translate(item)}} style={ messsage.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
-                        <Text style={styles[`text${messsage.user}`]}>{ item }</Text>
-                      </TouchableOpacity>
-                    }
-                    keyExtractor={(item, index) => index.toString()}
-                  />
-                  <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
-                </View>
+                <>
+                  { message.type === 'card' ?
+                    <View style={styles[`bubble${message.user}`]}>
+                      <FlatList listKey={'titleList' + index} style={[{flexDirection: 'row', borderBottomWidth: 1, margin: 5}, styles[`bubbleText${message.user}`]]}
+                        data = {message.text.title.split(' ')}
+                        renderItem={({ item }) =>
+                          <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                            <Text style={[styles[`text${message.user}`], {fontWeight: "bold", fontSize: 17}]}>{ item }</Text>
+                          </TouchableOpacity>
+                        }
+                        keyExtractor={(item, index) => index.toString()}
+                      />
+                      <FlatList listKey={'summaryList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
+                        data = {message.text.summary.split('. ').slice(0, 2).join('. ').split(' ')}
+                        renderItem={({ item, index }) =>
+                          <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                            <Text style={styles[`text${message.user}`]}>{ item }{ index === message.text.summary.split('.').slice(0, 2).join('.').split(' ').length - 1 && '.' }</Text>
+                          </TouchableOpacity>
+                        }
+                        keyExtractor={(item, index) => index.toString()}
+                      />
+                      <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
+                    </View>
+                  : message.type === 'emotion' ?
+                    message.text === 'happy' ? <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/happy.png')} />
+                    : message.text === 'sad' ? <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/sad.png')} />
+                    : <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/flattered.png')} />
+                  : <View style={styles[`bubble${message.user}`]}>
+                      <FlatList listKey={'regList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
+                        data = {message.text.split(' ')}
+                        renderItem={({ item }) =>
+                          <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                            <Text style={styles[`text${message.user}`]}>{ item }</Text>
+                          </TouchableOpacity>
+                        }
+                        keyExtractor={(item, index) => index.toString()}
+                      />
+                      <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
+                    </View>
+                  }
+                </>
               )
             }}
             key keyExtractor={(item, index) => index.toString()}
@@ -250,7 +308,6 @@ export default class Chat extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     backgroundColor: '#fafafa',
   },
   inputBox: {

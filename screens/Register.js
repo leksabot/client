@@ -53,7 +53,7 @@ class Register extends Component {
         let user = await AsyncStorage.getItem('user')
         if (user) {
           this.setState({ name: '', email: '', password: '' })
-          this.props.navigation.navigate('Chat')
+          this.props.navigation.navigate('Menu')
         }
       }
     } catch (e) {
