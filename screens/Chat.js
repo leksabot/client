@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Dimensions, AsyncStorage, Modal} from 'react-native'
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Dimensions, AsyncStorage, Modal, ActivityIndicator} from 'react-native'
 import axios from 'axios'
 import Upload from '../components/Upload'
+import { NavigationEvents } from 'react-navigation'
 
 export default class Chat extends Component {
 
@@ -16,26 +17,14 @@ export default class Chat extends Component {
       translateModal: false,
       translateOriText: '',
       translatedText: '',
-      definition: []
+      definition: [],
+      loading: true
     }
   }
 
   componentDidMount() {
-    AsyncStorage.getItem(`messages-${this.props.langcode}`)
-    .then(messages => {
-      if (messages) {
-        this.setState({
-          messages: JSON.parse(messages)
-        }, () => {
-          setTimeout(() => {
-            this.flatListSTE()
-          }, 100)
-        })
-      }
-    })
-    .catch(err => {
-      alert(err)
-    })
+  
+    this.fetchMessages()
 
     AsyncStorage.getItem(`user`)
     .then(user => {
@@ -50,17 +39,22 @@ export default class Chat extends Component {
     })
   }
 
-  toggleSearch(input) {
-    if (this.state.searchVisible) {
-      this.setState({
-        searchVisible: false
-      })
-    } else {
-      this.translate(input)
-      this.setState({
-        searchVisible: true
-      })
-    }
+  fetchMessages () {
+    AsyncStorage.getItem(`messages-${this.props.langcode}`)
+    .then(messages => {
+      if (messages && this.state.messages !== JSON.parse(messages)) {
+        this.setState({
+          messages: JSON.parse(messages)
+        })
+      } else {
+        this.setState({
+          messages: []
+        })
+      }
+    })
+    .catch(err => {
+      alert(err)
+    })
   }
 
   changeValue(state, value, cb) {
@@ -74,6 +68,13 @@ export default class Chat extends Component {
 
   flatListSTE () {
     this.flatListRef.scrollToEnd()
+    if (this.state.loading) {
+      setTimeout(() => {
+        this.setState({
+          loading: false
+        })
+      }, this.state.messages.length * 100)
+    }
   }
 
   getHourAndMinute() {
@@ -177,6 +178,14 @@ export default class Chat extends Component {
     return (
       <View style={styles.container}>
         <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 10}}>
+          { this.state.loading && 
+            <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
+              <ActivityIndicator size={50} color="red" /> 
+            </View>
+          }
+          <NavigationEvents
+            onDidBlur={() => this.fetchMessages()}
+          />
           <FlatList
             ref={(ref) => {this.flatListRef = ref}}
             getItemLayout={(data, index) => (
@@ -250,7 +259,6 @@ export default class Chat extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     backgroundColor: '#fafafa',
   },
   inputBox: {

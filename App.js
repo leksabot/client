@@ -59,7 +59,7 @@ const RootStack = createStackNavigator(
     'HangmanGame' : HangMan
   },
   {
-    initialRouteName: 'Splash',
+    initialRouteName: 'Menu',
     headerMode: 'none'
   }
 )
