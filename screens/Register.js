@@ -57,6 +57,7 @@ class Register extends Component {
         }
       }
     } catch (e) {
+      this.setState({ email: '', password: '' })
       console.log(e)
     }
   }

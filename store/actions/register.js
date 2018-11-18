@@ -19,11 +19,13 @@ export default function(name, email, password, language) {
       })
       .then((response) => {
         AsyncStorage.setItem('user', JSON.stringify(response.data))
-        dispatch({
-          type: 'REG_SUCCESS',
-          payload: response.data
+        .then(() => {
+          dispatch({
+            type: 'REG_SUCCESS',
+            payload: response.data
+          })
+          resolve(response.data)
         })
-        resolve(response.data)
       })
       .catch((error) => {
         reject(error.response.data.err)

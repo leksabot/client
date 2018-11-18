@@ -41,15 +41,16 @@ class Login extends Component {
     try {
       let data = await this.props.logging(email, password)
       if(data) {
-        // console.log('data',data) //ini
+        console.log('data',data) //ini
         let user = await AsyncStorage.getItem('user')
         if (user) {
-          // console.log('user',user) //ini
+          console.log('user',user) //ini
           this.setState({ email: '', password: '' })
           this.props.navigation.navigate('Menu')
         }
       }
     } catch (e) {
+      this.setState({ email: '', password: '' })
       console.log(e)
     }
   }

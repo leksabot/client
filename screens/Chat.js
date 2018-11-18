@@ -1,9 +1,17 @@
-import React, {Component} from 'react'
+import React, {Component, Fragment} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {StyleSheet, Text, View, TextInput, TouchableOpacity, FlatList, Dimensions, AsyncStorage, Modal, ActivityIndicator, Image} from 'react-native'
+import {StyleSheet, Text, View, ScrollView, Image, Modal, TextInput, TouchableOpacity, Alert, FlatList, Dimensions, AsyncStorage, ActivityIndicator} from 'react-native'
 import axios from 'axios'
-import Upload from '../components/Upload'
 import { NavigationEvents } from 'react-navigation'
+import { getHourAndMinute } from '../helpers/Chat'
+
+const options = {
+  title: 'Select Image',
+  storageOptions: {
+    skipBackup: true,
+    path: 'images',
+  },
+}
 
 export default class Chat extends Component {
 
@@ -12,20 +20,23 @@ export default class Chat extends Component {
     this.state = {
       newMsg: '',
       messages: [],
-      motherlang: 'id',
+      motherlang: '',
       inputHeight: 45,
       translateModal: false,
       translateOriText: '',
       translatedText: '',
       definition: [],
-      loading: true
+      //upload part
+      srcImg: '',
+      uri: '',
+      type: '',
+      fileName: '',
+      loading: false
     }
   }
 
   componentDidMount() {
-  
     this.fetchMessages()
-
     AsyncStorage.getItem(`user`)
     .then(user => {
       if (user) {
@@ -77,25 +88,12 @@ export default class Chat extends Component {
     }
   }
 
-  getHourAndMinute() {
-    let date = new Date()
-    let hour = String(date.getHours())
-    let minute = String(date.getMinutes())
-    if (hour.length < 2) {
-      hour = '0' + hour
-    }
-    if (minute.length < 2) {
-      minute = '0' + minute
-    }
-    return hour + ':' + minute
-  }
-
   sendMsg() {
     let msgCopy = this.state.newMsg.slice()
     this.setState({
       messages: [...this.state.messages, {
         text: this.state.newMsg,
-        time: this.getHourAndMinute(),
+        time: getHourAndMinute(),
         user: 1
       }],
       newMsg: ''
@@ -115,7 +113,7 @@ export default class Chat extends Component {
         this.setState({
           messages: [...this.state.messages, {
             text: data.reply,
-            time: this.getHourAndMinute(),
+            time: getHourAndMinute(),
             user: 2,
             type: data.type
           }]
@@ -151,6 +149,89 @@ export default class Chat extends Component {
     })
   }
 
+  pickImage() {
+    let ImagePicker = require('react-native-image-picker')
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('response ====== ', response)
+    
+      if (response.didCancel) {
+        console.log('User cancelled image picker')
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error)
+      } else {
+        const source = { uri: 'data:image/jpeg;base64,' + response.data }
+        this.setState({
+          srcImg: response.path,
+          uri: response.uri,
+          type: response.type,
+          fileName: response.fileName
+        }, () => {this.uploadPicture()})
+      }
+    })
+  }
+
+  uploadPicture() {
+    console.log('masuk upload')
+    this.setState  ({loading : true })
+    const {uri, type, fileName} = this.state
+    const toUpload = new FormData()
+    toUpload.append('imagefile', {
+      uri: uri,
+      type: type,
+      name: fileName,
+    })
+    toUpload.append('motherlanguage', 'en')
+    axios({
+      url: 'https://apileksabot23.efratsadeli.online/detectobject/gcp',
+      method: 'post',
+      data: toUpload
+    })
+    .then((response) => {
+      console.log('response upload', response)
+      this.sendImg(reply = response.data.data[0].originalText)
+      this.setState  ({
+        loading : false
+      })
+    })
+    .catch(err => {
+      console.log(err.response)
+    })
+  }
+
+  sendImg(reply) {
+    console.log('masuk send image', this.state, reply)
+    this.setState({
+      messages: [...this.state.messages, {
+        image: 'file://' + this.state.srcImg,
+        time: getHourAndMinute(),
+        user: 1
+      }]
+    }, () => {
+      const imgsend = setTimeout(() => {
+        this.flatListSTE()
+      }, 100)
+      Promise.all(imgsend)
+      .then(() => {
+        this.setState({
+          messages: [...this.state.messages, {
+            text: reply,
+            time: getHourAndMinute(),
+            user: 2
+          }]
+        }, () => {
+          setTimeout(() => {
+            this.flatListSTE()
+          }, 100)
+          AsyncStorage.setItem(`messages-${this.props.langcode}`, JSON.stringify(this.state.messages))
+        })
+      })
+      .catch(err => {
+        console.log(err.response)
+        alert(err)
+      })
+    })
+  }
+
   translate(item) {
     let regex = new RegExp(/[A-Za-z0-9]/)
     if (!regex.test(item[item.length - 1])) {
@@ -168,15 +249,16 @@ export default class Chat extends Component {
       }
     })
     let define = axios({
-      url: 'http://192.168.0.108:3023/df/define',
+      url: 'https://apileksabot23.efratsadeli.online/df/define',
       method: 'post',
       data: {
         keyword: item,
       }
     })
-
+    
     Promise.all([translate, define])
     .then(arr => {
+      console.log(arr)
       let tData = arr[0].data.data
       let definition = arr[1].data.reply
       if (typeof definition === 'string') {
@@ -190,6 +272,7 @@ export default class Chat extends Component {
       })
     })
     .catch(err => {
+      console.log(err.response)
       alert(err)
     })
   }
@@ -248,15 +331,21 @@ export default class Chat extends Component {
                     : message.text === 'sad' ? <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/sad.png')} />
                     : <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/flattered.png')} />
                   : <View style={styles[`bubble${message.user}`]}>
-                      <FlatList listKey={'regList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
-                        data = {message.text.split(' ')}
-                        renderItem={({ item }) =>
-                          <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
-                            <Text style={styles[`text${message.user}`]}>{ item }</Text>
-                          </TouchableOpacity>
-                        }
-                        keyExtractor={(item, index) => index.toString()}
-                      />
+                    {
+                      messsage.text ? (
+                        <FlatList listKey={'regList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
+                          data = {message.text.split(' ')}
+                          renderItem={({ item }) =>
+                            <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                              <Text style={styles[`text${message.user}`]}>{ item }</Text>
+                            </TouchableOpacity>
+                          }
+                          keyExtractor={(item, index) => index.toString()}
+                        />
+                      ) : (
+                        <Image source={{uri: messsage.image}} style={styles.uploadImg} />
+                      )
+                    }
                       <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
                     </View>
                   }
@@ -272,7 +361,10 @@ export default class Chat extends Component {
             <TouchableOpacity style={[styles.send, {height: Math.max(44, this.state.inputHeight + 3)}]} onPress={() => this.sendMsg()} >
               <Icon name='paper-plane' size={20} color='#FF3F04'/>
             </TouchableOpacity>
-            : <Upload />
+            :
+            <TouchableOpacity style={styles.send} onPress={() => {this.pickImage()}}>
+              <Icon name='camera' size={20} color='#FF3F04'/>
+            </TouchableOpacity>
           }
         </View>
 
@@ -280,24 +372,30 @@ export default class Chat extends Component {
           animationType="slide"
           transparent={false}
           visible={this.state.translateModal}
-        >
-          <View style={{marginTop: 20}}>
-            <View>
-              <Text style={{fontSize: 40, padding: 10, marginHorizontal: 30, marginVertical: 10, borderBottomWidth: 1}}>{ this.state.translateOriText } <Text style={{fontSize: 20}}>({ this.props.langcode })</Text></Text>
-              <Text style={{fontSize: 25, padding: 5, marginHorizontal: 30, marginVertical: 10}}>{ this.state.translatedText } <Text style={{fontSize: 15}}>({ this.state.motherlang.toLowerCase() })</Text></Text>
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.')
+        }}>
+          <View style={styles.container}>
+            <View style={styles.modcontainer}>
+              <View style={styles.subcontainer}>
+              <Text style={{fontSize: 40, padding: 10, borderBottomWidth: 1}}>{ this.state.translateOriText } <Text style={{fontSize: 20}}>({ this.props.langcode })</Text></Text>
+              <Text style={{fontSize: 25, padding: 5}}>{ this.state.translatedText } <Text style={{fontSize: 15}}>({ this.state.motherlang.toLowerCase() })</Text></Text>
+              </View>
+            </View>
+            <ScrollView style={{marginTop: 20, minHeight: 150, paddingLeft: 20}} contentContainerStyle={{flex: 0, flexGrow: 2}}>
               { this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
               { this.state.definition.map((def, index) =>
-                <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
+                <Text key={index} style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
               )}
-              <TouchableOpacity
-                onPress={() => {
-                  this.changeValue('translateModal');
-                }}
-                style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#FF3F04', width: '30%', height: 50, marginLeft: '35%', borderRadius: 15, marginTop: 50}}
-              >
-                <Text style={{color: 'white', textAlign: 'center', fontSize: 20}}>Close</Text>
-              </TouchableOpacity>
-            </View>
+            </ScrollView>
+            <TouchableOpacity
+              onPress={() => {
+                this.changeValue('translateModal')
+              }}
+              style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#FF3F04', width: '30%', height: 50, marginLeft: '35%', borderRadius: 15, marginBottom: 50}}
+            >
+              <Text style={{color: 'white', textAlign: 'center', fontSize: 20}}>Close</Text>
+            </TouchableOpacity>
           </View>
         </Modal>
       </View>
@@ -308,7 +406,25 @@ export default class Chat extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fafafa',
+    justifyContent: 'flex-start',
+    backgroundColor: 'white',
+  },
+  modcontainer: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderTopWidth: 120,
+    borderColor: '#FF3F04',
+  },
+  subcontainer: {
+    width: 300,
+    alignItems: 'flex-start',
+    backgroundColor: 'white',
+    paddingHorizontal: 30,
+    paddingVertical: 30,
+    borderRadius: 10,
+    marginTop: -80
   },
   inputBox: {
     flex: 1,
@@ -332,8 +448,8 @@ const styles = StyleSheet.create({
   },
   bubble1: {
     flex: 1,
-    maxWidth: '80%',
-    left: (Dimensions.get('window').width*0.2-10),
+    maxWidth: '70%',
+    left: (Dimensions.get('window').width*0.3-10),
     backgroundColor: 'white',
     borderWidth: 1,
     borderColor: 'transparent',
@@ -344,7 +460,7 @@ const styles = StyleSheet.create({
   },
   bubble2: {
     flex: 1,
-    maxWidth: '80%',
+    maxWidth: '70%',
     left: 10,
     backgroundColor: 'white',
     borderWidth: 1,
@@ -372,5 +488,11 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingHorizontal: 10,
     paddingVertical: 5,
+  },
+  uploadImg: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+    margin: 10
   }
 })
