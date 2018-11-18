@@ -217,13 +217,13 @@ export default class Chat extends Component {
               }, 100)
             }}
             data={this.state.messages}
-            renderItem={({item}) => {
+            renderItem={({item, index}) => {
               let message = item
               return (
                 <>
                   { message.type === 'card' ?
                     <View style={styles[`bubble${message.user}`]}>
-                      <FlatList listKey='titleList' style={[{flexDirection: 'row', borderBottomWidth: 1, margin: 5}, styles[`bubbleText${message.user}`]]}
+                      <FlatList listKey={'titleList' + index} style={[{flexDirection: 'row', borderBottomWidth: 1, margin: 5}, styles[`bubbleText${message.user}`]]}
                         data = {message.text.title.split(' ')}
                         renderItem={({ item }) =>
                           <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
@@ -232,11 +232,11 @@ export default class Chat extends Component {
                         }
                         keyExtractor={(item, index) => index.toString()}
                       />
-                      <FlatList listKey='summaryList' style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
-                        data = {message.text.summary.split(' ')}
-                        renderItem={({ item }) =>
+                      <FlatList listKey={'summaryList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
+                        data = {message.text.summary.split('. ').slice(0, 2).join('. ').split(' ')}
+                        renderItem={({ item, index }) =>
                           <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
-                            <Text style={styles[`text${message.user}`]}>{ item }</Text>
+                            <Text style={styles[`text${message.user}`]}>{ item }{ index === message.text.summary.split('.').slice(0, 2).join('.').split(' ').length - 1 && '.' }</Text>
                           </TouchableOpacity>
                         }
                         keyExtractor={(item, index) => index.toString()}
@@ -248,7 +248,7 @@ export default class Chat extends Component {
                     : message.text === 'sad' ? <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/sad.png')} />
                     : <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/flattered.png')} />
                   : <View style={styles[`bubble${message.user}`]}>
-                      <FlatList style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
+                      <FlatList listKey={'regList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
                         data = {message.text.split(' ')}
                         renderItem={({ item }) =>
                           <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
