@@ -200,7 +200,7 @@ export default class Chat extends Component {
         <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 10}}>
           { this.state.loading && 
             <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
-              <ActivityIndicator size={50} color="red" /> 
+              <ActivityIndicator size={50} color="#FF3F04" /> 
             </View>
           }
           <NavigationEvents
@@ -209,7 +209,7 @@ export default class Chat extends Component {
           <FlatList
             ref={(ref) => {this.flatListRef = ref}}
             getItemLayout={(data, index) => (
-              {length: 250, offset: 250 * index, index}
+              {length: 150, offset: 150 * index, index}
             )}
             onLayout={() => {
               setTimeout(() => {

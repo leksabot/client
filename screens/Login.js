@@ -46,7 +46,7 @@ class Login extends Component {
         if (user) {
           // console.log('user',user) //ini
           this.setState({ email: '', password: '' })
-          this.props.navigation.navigate('Chat')
+          this.props.navigation.navigate('Menu')
         }
       }
     } catch (e) {
