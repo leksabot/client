@@ -116,7 +116,9 @@ export default class Chat extends Component {
           messages: [...this.state.messages, {
             text: data.reply,
             time: this.getHourAndMinute(),
-            user: 2
+            user: 2,
+            type: data.type,
+            emotion: data.emotion
           }]
         }, () => {
           setTimeout(() => {
@@ -189,7 +191,7 @@ export default class Chat extends Component {
           <FlatList
             ref={(ref) => {this.flatListRef = ref}}
             getItemLayout={(data, index) => (
-              {length: 100, offset: 100 * index, index}
+              {length: 200, offset: 200 * index, index}
             )}
             onLayout={() => {
               setTimeout(() => {
@@ -201,15 +203,37 @@ export default class Chat extends Component {
               let messsage = item
               return (
                 <View style={styles[`bubble${messsage.user}`]}>
-                  <FlatList style={[{flexDirection: 'row'}, styles[`bubbleText${messsage.user}`]]}
-                    data = {messsage.text.split(' ')}
-                    renderItem={({ item }) =>
-                      <TouchableOpacity onPress={() => {this.translate(item)}} style={ messsage.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
-                        <Text style={styles[`text${messsage.user}`]}>{ item }</Text>
-                      </TouchableOpacity>
-                    }
-                    keyExtractor={(item, index) => index.toString()}
-                  />
+                  { messsage.type === 'card' ?
+                    <>
+                      <FlatList listKey='titleList' style={[{flexDirection: 'row', borderBottomWidth: 1, margin: 5}, styles[`bubbleText${messsage.user}`]]}
+                        data = {messsage.text.title.split(' ')}
+                        renderItem={({ item }) =>
+                          <TouchableOpacity onPress={() => {this.translate(item)}} style={ messsage.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                            <Text style={[styles[`text${messsage.user}`], {fontWeight: "bold", fontSize: 17}]}>{ item }</Text>
+                          </TouchableOpacity>
+                        }
+                        keyExtractor={(item, index) => index.toString()}
+                      />
+                      <FlatList listKey='summaryList' style={[{flexDirection: 'row'}, styles[`bubbleText${messsage.user}`]]}
+                        data = {messsage.text.summary.split(' ')}
+                        renderItem={({ item }) =>
+                          <TouchableOpacity onPress={() => {this.translate(item)}} style={ messsage.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                            <Text style={styles[`text${messsage.user}`]}>{ item }</Text>
+                          </TouchableOpacity>
+                        }
+                        keyExtractor={(item, index) => index.toString()}
+                      />
+                    </>
+                  : <FlatList style={[{flexDirection: 'row'}, styles[`bubbleText${messsage.user}`]]}
+                      data = {messsage.text.split(' ')}
+                      renderItem={({ item }) =>
+                        <TouchableOpacity onPress={() => {this.translate(item)}} style={ messsage.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                          <Text style={styles[`text${messsage.user}`]}>{ item }</Text>
+                        </TouchableOpacity>
+                      }
+                      keyExtractor={(item, index) => index.toString()}
+                    />
+                  }
                   <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
                 </View>
               )
