@@ -3,6 +3,7 @@ package com.client;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.zmxv.RNSound.RNSoundPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -26,7 +27,8 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
           new ImagePickerPackage(), //add this
-          new LinearGradientPackage()
+          new LinearGradientPackage(),
+          new RNSoundPackage()
       );
     }
 
