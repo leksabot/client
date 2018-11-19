@@ -5,6 +5,7 @@ import axios from 'axios';
 export default class Game extends Component {
 
   state = {
+    lang: 'EN',
     questions: [],
     answered: 0,
     score: 0,
@@ -21,7 +22,7 @@ export default class Game extends Component {
       url: 'https://apileksabot23.efratsadeli.online/question/list',
       method: 'post',
       data: {
-        language: 'EN',
+        language: this.state.lang,
         size: 5
       }
     })
@@ -37,7 +38,7 @@ export default class Game extends Component {
           }
         }, 11000)
         let int = setInterval(() => {
-          if (this.state.timer > 0) {
+          if (this.state.timer > 0 && this.state.quizModal && this.state.answered === this.state.questionIndex) {
             this.setState({
               timer: this.state.timer - 1
             })
@@ -53,7 +54,7 @@ export default class Game extends Component {
   }
 
   startGame() {
-    AsyncStorage.getItem('quiz-score')
+    AsyncStorage.getItem('quiz-score' + this.state.lang)
     .then(lastScore => {
       this.setState({
         questions: [],
@@ -93,7 +94,7 @@ export default class Game extends Component {
         score: newScore
       })
       if (questionIndex === 4) {
-        AsyncStorage.setItem('quiz-score', String(newScore))
+        AsyncStorage.setItem('quiz-score' + this.state.lang, String(newScore))
         .catch(err => {
           alert(err)
         })
@@ -105,7 +106,7 @@ export default class Game extends Component {
           timer: 10
         })
         let int = setInterval(() => {
-          if (this.state.timer > 0) {
+          if (this.state.timer > 0 && this.state.quizModal && this.state.answered === this.state.questionIndex) {
             this.setState({
               timer: this.state.timer - 1
             })
@@ -137,8 +138,16 @@ export default class Game extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={{backgroundColor: '#FF3F04', paddingVertical: 20, paddingHorizontal: 30, borderRadius: 10}} onPress={() => {this.startGame()}}>
-          <Text style={{color: 'white'}}>start the game</Text>
+        <View style={{flexDirection: 'row', marginBottom: 20}}>
+          <TouchableOpacity style={{backgroundColor: 'transparent', paddingVertical: 10, paddingHorizontal: 30, borderColor: '#FF3F04', borderBottomWidth: this.state.lang === 'EN' ? 1 : 0}} onPress={() => {this.setState({ lang: 'EN' })}}>
+            <Text style={{color: this.state.lang === 'EN' ? '#FF3F04' : 'grey'}}>EN</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{backgroundColor: 'transparent', paddingVertical: 10, paddingHorizontal: 30, borderColor: '#FF3F04', borderBottomWidth: this.state.lang === 'FR' ? 1 : 0}} onPress={() => {this.setState({ lang: 'FR' })}}>
+            <Text style={{color: this.state.lang === 'FR' ? '#FF3F04' : 'grey'}}>FR</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity style={{backgroundColor: '#FF3F04', paddingVertical: 20, paddingHorizontal: 30, borderRadius: 10, width: '60%'}} onPress={() => {this.startGame()}}>
+          <Text style={{color: 'white', textAlign: "center"}}>{ this.state.lang === 'EN' ? 'start the game' : 'commencez' }</Text>
         </TouchableOpacity>
 
         <Modal
@@ -182,13 +191,13 @@ export default class Game extends Component {
                 <Text>{}</Text>
                 <TouchableOpacity style={[styles.answer, {backgroundColor: '#FF3F04', marginTop: 20}]} onPress={() => {this.exitGame()}}>
                   <Text style={{color: 'white', textAlign: 'center'}}>
-                    exit the game
+                    { this.state.lang === 'EN' ? 'exit game' : 'quittez' }
                   </Text>
                 </TouchableOpacity>
               </ScrollView>
             : <ScrollView contentContainerStyle={{justifyContent: 'center', alignItems: 'center', marginHorizontal: '10%', marginVertical: '20%'}}>
                 <Text style={{textAlign: "center", fontSize: 20, marginTop: '30%', marginBottom: 10}}>
-                  You answered
+                  { this.state.lang === 'EN' ? 'You answered' : 'Vous avez répondu à' }
                 </Text>
                 <Text style={{textAlign: "center", fontSize: 35, marginBottom: 10}}>
                   { this.state.score } / 5
@@ -198,17 +207,17 @@ export default class Game extends Component {
                 </Text>
                 { this.state.lastScore !== null &&
                   <Text style={{textAlign: "center", fontSize: 15, marginBottom: 50}}>
-                    You have { this.state.score >= this.state.lastScore ? 'improved by' : 'declined by' } { Math.round(Math.abs(this.state.lastScore - this.state.score) * 20) }% since the last time you played
+                    { this.state.lang === 'EN' ? 'You have' : this.state.score >= this.state.lastScore ? 'Vous vous etes' : 'Vous etes' } { this.state.score >= this.state.lastScore ? this.state.lang === 'EN' ? 'improved by' : 'améliorés à' : this.state.lang === 'EN' ? 'declined by' : 'en baisse à' } { Math.round(Math.abs(this.state.lastScore - this.state.score) * 20) }% { this.state.lang === 'EN' ? 'since the last time you played' : 'depuis les derniers jeux'}
                   </Text>
                 }
                 <TouchableOpacity style={[styles.answer, {backgroundColor: '#FF3F04', marginTop: 20}]} onPress={() => {this.startGame()}}>
                   <Text style={{color: 'white', textAlign: 'center'}}>
-                    restart the game
+                    { this.state.lang === 'EN' ? 'restart the game' : 'recommencez' }
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.answer, {backgroundColor: '#FF3F04', marginTop: 20}]} onPress={() => {this.exitGame()}}>
                   <Text style={{color: 'white', textAlign: 'center'}}>
-                    exit the game
+                    { this.state.lang === 'EN' ? 'exit game' : 'quittez' }
                   </Text>
                 </TouchableOpacity>
               </ScrollView>
