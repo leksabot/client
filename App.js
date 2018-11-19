@@ -65,9 +65,10 @@ const RootStack = createStackNavigator(
     'Menu': SidebarStack,
     'Login': LoginStack,
     'Register': RegisterStack,
+    'Game': GameNav
   },
   {
-    initialRouteName: 'Splash',
+    initialRouteName: 'Game',
     headerMode: 'none'
   }
 )
