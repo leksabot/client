@@ -282,7 +282,7 @@ export default class Chat extends Component {
         <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 10}}>
           { this.state.loading && 
             <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
-              <ActivityIndicator size={50} color="#FF3F04" /> 
+              <ActivityIndicator size={50} color="#FF3F04" />
             </View>
           }
           <NavigationEvents
@@ -318,7 +318,7 @@ export default class Chat extends Component {
                         data = {message.text.summary.split('. ').slice(0, 2).join('. ').split(' ')}
                         renderItem={({ item, index }) =>
                           <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
-                            <Text style={styles[`text${message.user}`]}>{ item }{ index === message.text.summary.split('.').slice(0, 2).join('.').split(' ').length - 1 && '.' }</Text>
+                            <Text style={styles[`text${message.user}`]}>{ item } }</Text>
                           </TouchableOpacity>
                         }
                         keyExtractor={(item, index) => index.toString()}
@@ -371,9 +371,7 @@ export default class Chat extends Component {
           animationType="slide"
           transparent={false}
           visible={this.state.translateModal}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.')
-        }}>
+          onRequestClose={() => {}}>
           <View style={styles.container}>
             <View style={styles.modcontainer}>
               <View style={styles.subcontainer}>
