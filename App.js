@@ -6,7 +6,7 @@ import { StyleSheet, Dimensions, BackHandler, Alert } from 'react-native'
 import Splash from './screens/Splash'
 import Language from './screens/Language'
 import HangMan from './screens/Hangman'
-import Game from './screens/Game'
+import Quiz from './screens/Quiz'
 import Chat from './screens/Chat'
 import Register from './screens/Register'
 import Login from './screens/Login'
@@ -43,8 +43,17 @@ const LangNav = createTabNavigator({
   }
 })
 
+const GameNav = createTabNavigator({
+  'Quiz': Quiz,
+  'Hangman': HangMan
+}, {
+  navigationOptions: {
+    tabBarVisible: false
+  }
+})
+
 // sidebar for chat and game
-const SidebarStack = createDrawerNavigator({'Chat': LangNav, 'Game': Game}, {
+const SidebarStack = createDrawerNavigator({'Chat': LangNav, 'Game': GameNav}, {
   contentComponent: SidebarComponent,
   drawerWidth: Dimensions.get('window').width - 130,
 })
@@ -56,7 +65,6 @@ const RootStack = createStackNavigator(
     'Menu': SidebarStack,
     'Login': LoginStack,
     'Register': RegisterStack,
-    'HangmanGame' : HangMan
   },
   {
     initialRouteName: 'Splash',

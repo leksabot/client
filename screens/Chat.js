@@ -258,7 +258,6 @@ export default class Chat extends Component {
     
     Promise.all([translate, define])
     .then(arr => {
-      console.log(arr)
       let tData = arr[0].data.data
       let definition = arr[1].data.reply
       if (typeof definition === 'string') {
@@ -332,7 +331,7 @@ export default class Chat extends Component {
                     : <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/flattered.png')} />
                   : <View style={styles[`bubble${message.user}`]}>
                     {
-                      messsage.text ? (
+                      message.text ? (
                         <FlatList listKey={'regList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
                           data = {message.text.split(' ')}
                           renderItem={({ item }) =>
@@ -343,7 +342,7 @@ export default class Chat extends Component {
                           keyExtractor={(item, index) => index.toString()}
                         />
                       ) : (
-                        <Image source={{uri: messsage.image}} style={styles.uploadImg} />
+                        <Image source={{uri: message.image}} style={styles.uploadImg} />
                       )
                     }
                       <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>

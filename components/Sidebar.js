@@ -18,8 +18,8 @@ const toChat = (props, lang) => (
   props.navigation.navigate(lang)
 )
 
-const toGame = (props) => (
-  props.activeItemKey !== 'Game' && props.navigation.navigate('Game')
+const toGame = (props, type) => (
+  props.navigation.navigate(type)
 )
 
 const logout = async (props) => {
@@ -69,10 +69,18 @@ const SidebarComponent = (props) => (
             <Text style={[styles.menuText, {paddingLeft: 50}]}>Français</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => toGame(props)}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Icon name='gamepad' size={25} color='tomato'/>
+          <Text style={styles.menuText}>Games</Text>
+        </View>
+        <TouchableOpacity onPress={() => toGame(props, 'Quiz')}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon name='gamepad' size={25} color='tomato'/>
-            <Text style={styles.menuText}>Game</Text>
+            <Text style={[styles.menuText, {paddingLeft: 50}]}>Quiz</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => toGame(props, 'Hangman')}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={[styles.menuText, {paddingLeft: 50}]}>Hangman</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.logout} onPress={() => logout(props)}>
