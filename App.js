@@ -54,9 +54,9 @@ const GameNav = createTabNavigator({
 })
 
 // sidebar for chat and game
-const SidebarStack = createDrawerNavigator({'Chat': LangNav, 'Game': GameNav, 'HangmanGame' : HangMan ,'HangManPlayGame': HangManPlay}, {
+const SidebarStack = createDrawerNavigator({'Chat': LangNav, 'Game': GameNav, HangManPlayGame: HangManPlay}, {
   contentComponent: SidebarComponent,
-  drawerWidth: Dimensions.get('window').width - 130,
+  drawerWidth: Dimensions.get('window').width - 130
 })
 
 const RootStack = createStackNavigator(
@@ -65,9 +65,7 @@ const RootStack = createStackNavigator(
     'Language': Language,
     'Menu': SidebarStack,
     'Login': LoginStack,
-    'Register': RegisterStack,
-    'HangmanGame' : HangMan,
-    'HangManPlayGame':HangManPlay
+    'Register': RegisterStack
   },
   {
     initialRouteName: 'Splash',
