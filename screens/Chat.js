@@ -18,6 +18,7 @@ export default class Chat extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      userName: '',
       newMsg: '',
       messages: [],
       motherlang: '',
@@ -31,17 +32,19 @@ export default class Chat extends Component {
       uri: '',
       type: '',
       fileName: '',
-      loading: false
+      loading: true
     }
   }
 
   componentDidMount() {
-    this.fetchMessages()
     AsyncStorage.getItem(`user`)
     .then(user => {
       if (user) {
         this.setState({
-          motherlang: JSON.parse(user).lang
+          motherlang: JSON.parse(user).lang,
+          userName: JSON.parse(user).name
+        }, () => {
+          this.fetchMessages()
         })
       }
     })
@@ -55,11 +58,23 @@ export default class Chat extends Component {
     .then(messages => {
       if (messages && this.state.messages !== JSON.parse(messages)) {
         this.setState({
-          messages: JSON.parse(messages)
+          messages: JSON.parse(messages),
+        }, () => {
+          this.setState({
+            loading: false
+          })
         })
       } else {
         this.setState({
-          messages: []
+          messages: [{
+            text: this.props.langcode === 'en' ? `Hi, ${this.state.userName}. My name is Leksa and I'm here to help you improve your English.` : `Salut ${this.state.userName}. Je m'appelle Leksa et je suis ici pour vous aider à améliorer votre français.` ,
+            time: getHourAndMinute(),
+            user: 2
+          }]
+        }, () => {
+          this.setState({
+            loading: false
+          })
         })
       }
     })
@@ -233,6 +248,9 @@ export default class Chat extends Component {
   }
 
   translate(item) {
+    this.setState({
+      loading: true
+    })
     let regex = new RegExp(/[A-Za-z0-9]/)
     if (!regex.test(item[item.length - 1])) {
       item = item.slice(0, item.length - 1).toLowerCase()
@@ -249,7 +267,7 @@ export default class Chat extends Component {
       }
     })
     let define = axios({
-      url: 'https://apileksabot23.efratsadeli.online/df/define',
+      url: this.props.langcode === 'en' ? 'https://apileksabot23.efratsadeli.online/df/define' : 'https://apileksabot23.efratsadeli.online/df/definefrench',
       method: 'post',
       data: {
         keyword: item,
@@ -260,10 +278,11 @@ export default class Chat extends Component {
     .then(arr => {
       let tData = arr[0].data.data
       let definition = arr[1].data.reply
-      if (typeof definition === 'string') {
+      if (typeof definition === 'string' && this.props.langcode === 'en') {
         definition = []
       }
       this.setState({
+        loading: false,
         translateModal: true,
         translateOriText: tData.originalText,
         translatedText: tData.translatedText.toLowerCase(),
@@ -273,6 +292,9 @@ export default class Chat extends Component {
     .catch(err => {
       console.log(err.response)
       alert(err)
+      this.setState({
+        loading: false,
+      })
     })
   }
 
@@ -380,8 +402,8 @@ export default class Chat extends Component {
               </View>
             </View>
             <ScrollView style={{marginTop: 20, minHeight: 150, paddingLeft: 20}} contentContainerStyle={{flex: 0, flexGrow: 2}}>
-              { this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
-              { this.state.definition.map((def, index) =>
+              { this.props.langcode === 'en' && this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
+              { this.props.langcode === 'en' && this.state.definition.map((def, index) =>
                 <Text key={index} style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
               )}
             </ScrollView>
