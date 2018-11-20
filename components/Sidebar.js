@@ -49,8 +49,8 @@ const SidebarComponent = (props) => (
               }}
           />
           <View>
-            <Text style={styles.navName}> Jane Doe </Text>
-            <Text style={styles.navEmail}> janedoe@mail.com </Text>
+            <Text style={styles.navName}>{ props.user.name }</Text>
+            <Text style={styles.navEmail}>{ props.user.email }</Text>
           </View>
         </View>
       </View>
