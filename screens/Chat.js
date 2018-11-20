@@ -340,7 +340,7 @@ export default class Chat extends Component {
                         data = {message.text.summary.split('. ').slice(0, 2).join('. ').split(' ')}
                         renderItem={({ item, index }) =>
                           <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
-                            <Text style={styles[`text${message.user}`]}>{ item } }</Text>
+                            <Text style={styles[`text${message.user}`]}>{ item }</Text>
                           </TouchableOpacity>
                         }
                         keyExtractor={(item, index) => index.toString()}
