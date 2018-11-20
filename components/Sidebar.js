@@ -3,6 +3,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { StyleSheet, Dimensions, ScrollView, Image, Text, View, TouchableOpacity, AsyncStorage } from 'react-native'
 import { connect } from 'react-redux'
 import LogoutAction from '../store/actions/logout'
+import { withNavigation } from 'react-navigation'
 
 const mapStateToProps = state => ({
   user: state.authReducer.user,
@@ -23,6 +24,7 @@ const toGame = (props, type) => (
 )
 
 const logout = async (props) => {
+  props.navigation.closeDrawer()
   try {
     let data = await props.loggingout()
     if (data) {
@@ -104,7 +106,7 @@ const SidebarComponent = (props) => (
   </View>
 )
 
-export default connect(mapStateToProps, mapDispatchToProps)(SidebarComponent)
+export default connect(mapStateToProps, mapDispatchToProps)(withNavigation(SidebarComponent))
 
 const styles = StyleSheet.create({
   container: {

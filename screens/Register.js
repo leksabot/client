@@ -5,6 +5,7 @@ import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity, Image, Asyn
 import RegAction from '../store/actions/register'
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { withNavigation } from 'react-navigation'
 
 const DARK_COLOR = '#ff3f40'
 const PLACEHOLDER_COLOR = 'rgba(255,255,255,0.2)'
@@ -134,7 +135,7 @@ class Register extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Register)
+export default connect(mapStateToProps, mapDispatchToProps)(withNavigation(Register))
 
 const styles = StyleSheet.create({
   container: {

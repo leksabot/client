@@ -4,6 +4,7 @@ import {StyleSheet, Text, View,  Alert, TextInput, TouchableOpacity, Image, Asyn
 import { connect } from 'react-redux'
 import LoginAction from '../store/actions/login'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import { withNavigation } from 'react-navigation'
 
 const mapStateToProps = state => ({
   user: state.authReducer.user,
@@ -106,7 +107,7 @@ class Login extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login)
+export default connect(mapStateToProps, mapDispatchToProps)(withNavigation(Login))
 
 const styles = StyleSheet.create({
   container: {
