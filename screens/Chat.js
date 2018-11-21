@@ -332,7 +332,7 @@ class Chat extends Component {
           </TouchableOpacity>
           <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 60}}>
             { this.state.loading && 
-              <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
+              <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute'}}>
                 <ActivityIndicator size={50} color="#ff3f40" />
               </View>
             }
@@ -426,34 +426,34 @@ class Chat extends Component {
             <View style={styles.container}>
               <View style={styles.modcontainer}>
                 <View style={styles.subcontainer}>
-                <Text style={{fontSize: 40, padding: 10, borderBottomWidth: 1}}>{ this.state.translateOriText } <Text style={{fontSize: 20}}>({ this.props.langcode })</Text></Text>
-                <Text style={{fontSize: 25, padding: 5}}>{ this.state.translatedText } <Text style={{fontSize: 15}}>({ this.state.motherlang.toLowerCase() })</Text></Text>
+                  <Text style={{fontSize: 40, padding: 10, borderBottomWidth: 1}}>{ this.state.translateOriText } <Text style={{fontSize: 20}}>({ this.props.langcode })</Text></Text>
+                  <Text style={{fontSize: 25, padding: 5}}>{ this.state.translatedText } <Text style={{fontSize: 15}}>({ this.state.motherlang.toLowerCase() })</Text></Text>
                 </View>
-                <ScrollView style={{marginTop: 20, minHeight: 150, paddingLeft: 20}} contentContainerStyle={{flex: 0, flexGrow: 2}}>
-                {
-                  this.props.langcode === 'en' ? (
-                  <>
-                    { this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
-                    { this.state.definition.map((def, index) =>
-                      <Text key={index} style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
-                    )}
-                  </>
-                  ) : (
-                  <>
-                    <Text style={{fontSize: 15, padding: 5, marginHorizontal: 40, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>la définition de { this.state.translateOriText } est : { this.state.definition }</Text>
-                  </>
-                  )
-                }
-                </ScrollView>
-                <TouchableOpacity
-                  onPress={() => {
-                    this.changeValue('translateModal')
-                  }}
-                  style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#ff3f40', width: '30%', height: 50, marginLeft: '35%', borderRadius: 15, marginBottom: 50}}
-                >
-                  <Text style={{color: 'white', textAlign: 'center', fontSize: 20}}>Close</Text>
-                </TouchableOpacity>
               </View>
+              <ScrollView style={{marginTop: 20, minHeight: 150, paddingLeft: 20}} contentContainerStyle={{flex: 0, flexGrow: 2}}>
+              {
+                this.props.langcode === 'en' ? (
+                <>
+                  { this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
+                  { this.state.definition.map((def, index) =>
+                    <Text key={index} style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
+                  )}
+                </>
+                ) : (
+                <>
+                  <Text style={{fontSize: 15, padding: 5, marginHorizontal: 40, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>la définition de { this.state.translateOriText } est : { this.state.definition }</Text>
+                </>
+                )
+              }
+              </ScrollView>
+              <TouchableOpacity
+                onPress={() => {
+                  this.changeValue('translateModal')
+                }}
+                style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#ff3f40', width: '30%', height: 50, marginLeft: '35%', borderRadius: 15, marginBottom: 50}}
+              >
+                <Text style={{color: 'white', textAlign: 'center', fontSize: 20}}>Close</Text>
+              </TouchableOpacity>
             </View>
           </Modal>
         </View>

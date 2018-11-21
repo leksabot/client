@@ -76,7 +76,7 @@ export default class Game extends Component {
 
   nextQ(num) {
     const { questions, questionIndex, answered, score, timer } = this.state
-    if (answered === questionIndex && (timer > 0 || num === 0)) {
+    if (answered === questionIndex && (timer > 0 || num === 0) && questionIndex < 5 && questions[questionIndex]) {
       num = Number(num)
       let color = Array(4).fill('black')
       let trueIndex = questions[questionIndex].answer
@@ -157,7 +157,7 @@ export default class Game extends Component {
           onRequestClose={() => {}}>
           <View>
             { this.state.loading ?
-              <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
+              <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute'}}>
                 <ActivityIndicator size={50} color="#FF3F40" />
               </View>
             : this.state.questions && this.state.questions[this.state.questionIndex] ?
