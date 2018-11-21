@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { StyleSheet, Dimensions, ScrollView, Image, Text, View, TouchableOpacity, AsyncStorage } from 'react-native'
 import { connect } from 'react-redux'
@@ -15,79 +15,96 @@ const mapDispatchToProps = dispatch => ({
   loggingout : () => dispatch(LogoutAction())
 })
 
-const toChat = (props, lang) => (
-  props.navigation.navigate(lang)
-)
+class SidebarComponent extends Component {
+  state = {
+    profile: ''
+  }
 
-const toGame = (props, type) => (
-  props.navigation.navigate(type)
-)
-
-const logout = async (props) => {
-  props.navigation.closeDrawer()
-  try {
-    let data = await props.loggingout()
-    if (data) {
-      let user = await AsyncStorage.getItem('user')
-      if(!user) {
-        return props.navigation.navigate('Login')
+  componentDidMount() {
+    AsyncStorage.getItem(`user`)
+    .then(user => {
+      if (user) {
+        this.setState({
+          profile: JSON.parse(user)
+        })
       }
+    })
+  }
+
+  toChat = (lang) => (
+    this.props.navigation.navigate(lang)
+  )
+  
+  toGame = (type) => (
+    this.props.navigation.navigate(type)
+  )
+  
+  logout = async () => {
+    this.props.navigation.closeDrawer()
+    try {
+      let data = await this.props.loggingout()
+      if (data) {
+        this.props.navigation.navigate('Login')
+      }
+    } catch(e) {
+      console.log(e.response)
     }
-  } catch(e) {
-    alert(e)
+  }
+
+  render() {
+    const { profile } = this.state
+    return (
+    <View style={styles.container}>
+      <ScrollView>
+        <View style={styles.navSection}>
+        <View style={styles.navUser}>
+            <View>
+              <Text style={styles.navName}>{ profile && profile.name }</Text>
+              <Text style={styles.navEmail}>{ profile && profile.email }</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.menuSection}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Icon name='wechat' size={25} color='tomato'/>
+            <Text style={styles.menuText}>Chat</Text>
+          </View>
+          <TouchableOpacity onPress={() => this.toChat('English')}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={[styles.menuText, {paddingLeft: 50}]}>English</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.toChat('Français')}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={[styles.menuText, {paddingLeft: 50}]}>Français</Text>
+            </View>
+          </TouchableOpacity>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Icon name='gamepad' size={25} color='tomato'/>
+            <Text style={styles.menuText}>Games</Text>
+          </View>
+          <TouchableOpacity onPress={() => this.toGame('Quiz')}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={[styles.menuText, {paddingLeft: 50}]}>Quiz</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => this.toGame('Hangman')}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text style={[styles.menuText, {paddingLeft: 50}]}>Hangman</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.logout} onPress={() => this.logout()}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Icon name='sign-out' size={25} color='tomato'/>
+              <Text style={styles.menuText}>Logout</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
+    )
   }
 }
-
-const SidebarComponent = (props) => (
-  <View style={styles.container}>
-    <ScrollView>
-      <View style={styles.navSection}>
-      <View style={styles.navUser}>
-          <View>
-            <Text style={styles.navName}>{ props.user && props.user.name }</Text>
-            <Text style={styles.navEmail}>{ props.user && props.user.email }</Text>
-          </View>
-        </View>
-      </View>
-      <View style={styles.menuSection}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Icon name='wechat' size={25} color='tomato'/>
-          <Text style={styles.menuText}>Chat</Text>
-        </View>
-        <TouchableOpacity onPress={() => toChat(props, 'English')}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={[styles.menuText, {paddingLeft: 50}]}>English</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => toChat(props, 'Français')}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={[styles.menuText, {paddingLeft: 50}]}>Français</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Icon name='gamepad' size={25} color='tomato'/>
-          <Text style={styles.menuText}>Games</Text>
-        </View>
-        <TouchableOpacity onPress={() => toGame(props, 'Quiz')}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={[styles.menuText, {paddingLeft: 50}]}>Quiz</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => toGame(props, 'Hangman')}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={[styles.menuText, {paddingLeft: 50}]}>Hangman</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.logout} onPress={() => logout(props)}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Icon name='sign-out' size={25} color='tomato'/>
-            <Text style={styles.menuText}>Logout</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
-  </View>
-)
 
 export default connect(mapStateToProps, mapDispatchToProps)(withNavigation(SidebarComponent))
 
