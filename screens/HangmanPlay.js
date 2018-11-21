@@ -1,5 +1,5 @@
 import React, {Component, Fragment} from 'react'
-import {StyleSheet, Text, View, ScrollView,  Alert, TouchableOpacity,FlatList,Image} from 'react-native'
+import {StyleSheet, Text, View, ScrollView,  Alert, TouchableOpacity,FlatList,Image } from 'react-native'
 import { NavigationEvents } from 'react-navigation'
 import SoundPlayer from 'react-native-sound'
 import Modal from "react-native-modal";
@@ -260,7 +260,7 @@ export default class HangmanGame extends Component {
       'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
     ]
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
        <NavigationEvents
             onDidBlur={() => this.stopmusic()}
           />
@@ -284,7 +284,7 @@ export default class HangmanGame extends Component {
               source={this.state.pic}
             />
         </View>
-        <View style={{flexDirection: 'row', alignSelf:'center',paddingTop:100}} >
+        <View style={{flexDirection: 'row', alignSelf:'center',paddingTop:30}} >
           { this.state.word.map((el,index) => {
             return (
                 <View style={ styles.boxQ }>
@@ -293,27 +293,27 @@ export default class HangmanGame extends Component {
             )
           })}
         </View>
-        <View style={{ flexDirection: 'row',height: 35,paddingTop: 75 }} >
-          <View style={ {borderRadius: 10, backgroundColor:'#FF3F04',height: 85 ,left:20 ,width:380 }  }>
-            <Text style={{fontSize: 16,fontWeight: 'bold', textAlign:'left',color:'white', left:5}}>{this.props.navigation.state.params.lang=='EN' ? 'Hint': 'Allusion'} : {"\n"}{this.state.currentWord ? this.state.currentWord.hint[this.state.currentHint] :''} </Text>
+        <View style={{ flexDirection: 'row',height: 35,paddingTop: 15 }} >
+          <View style={ {borderRadius: 10, backgroundColor:'#FF3F40',height: 85 ,left:20 ,width:380 }  }>
+            <Text style={{fontSize: 17,fontWeight: 'bold', textAlign:'left',color:'white', left:4 }}>{this.props.navigation.state.params.lang=='EN' ? 'Hint': 'Allusion'} : {"\n"}{this.state.currentWord ? this.state.currentWord.hint[this.state.currentHint] :''} </Text>
           </View>
         </View>
-        <View style={ styles.keyboardcontainer }>
+        <View style={styles.keyboardcontainer }>
           { alphabeth.map((el,index) => {
             return (
               <TouchableOpacity
-                key={index}
-                style={styles.keyboard}
-                onPress={() => { this.handlePress(el,index)}}
-                >
-                <View style={{backgroundColor: this.state.board[index]==false ? 'white': 'black'}}>
-                 <Text style={styles.mytext}> { alphabeth[index] } </Text>
-                </View>
+              key={index}
+              style={{}}
+              onPress={() => { this.handlePress(el,index)}}
+              >    
+              <View style={[styles.keyboard,{backgroundColor: this.state.board[index]==false ? 'white': 'black'}]}>
+                 <Text style={styles.mytext}> { alphabeth[index] } </Text>                        
+              </View>
             </TouchableOpacity>
             )
           })}
         </View>
-      </View>
+      </ScrollView>
     )
   }
 }
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#00ebff',
     elevation: 1,
     width: 39,
-    height: 47,
+    height: 45,
     margin: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -359,13 +359,14 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingTop:150,
     //justifyContent :'center',
-    alignItems: 'center',   
+    //alignItems: 'center',   
+    left: 5
   },  
   keyboard: {
     borderRadius: 5,
-    elevation: 1,
+    elevation: 4,
     width: 39,
-    height: 40,
+    height: 39,
     margin: 3,
     justifyContent: 'center',
     alignItems: 'center'

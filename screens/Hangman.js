@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   txwhite: {
     fontSize: 16,
     textAlign: 'center',
-    color: '#FF3F04',
+    color: '#FF3F40',
     fontWeight: 'bold',
   },
   text: {
