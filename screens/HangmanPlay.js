@@ -11,7 +11,7 @@ import pic5 from '../assets/pic5.png'
 const animation=[pic5,pic4,pic3,pic2,pic1]
 const allwordEN=[
   { word:'BANANA', hint:['Yellow fruit', 'Sweet and delicate'] }, 
-  { word:'MOTORCYCLE', hint:['Road vehicle', 'It has 2 wheels']},
+  { word:'BOXING', hint:['A combat sport in which two people, usually wearing protective gloves']},
   { word:'GRAPE', hint:['A dull, dark, purplish-red color', 'They are commonly used to produce wine']},
   { word:'CHAIR', hint:['A piece of furniture designed to accommodate one sitting','Typically standing on four legs']},
   { word:'HOUSE', hint:['A building for human habitation']},
