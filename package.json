@@ -15,6 +15,7 @@
     "react-native-image-picker": "^0.27.1",
     "react-native-linear-gradient": "^2.4.0",
     "react-native-material-ui": "^1.30.1",
+    "react-native-modal": "^7.0.0",
     "react-native-off-canvas-menu": "^0.1.32",
     "react-native-shadow": "^1.2.2",
     "react-native-sound": "^0.10.9",
