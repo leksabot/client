@@ -16,7 +16,6 @@ const allwordEN=[
   { word:'CHAIR', hint:['A piece of furniture designed to accommodate one sitting','Typically standing on four legs']},
   { word:'HOUSE', hint:['A building for human habitation']},
   { word:'LEG', hint:['A limb of a human used especially for supporting the body', 'A limb of a human used for walking']},
- 
 ]
 const allwordFR=[
   { word: 'MAISON', hint: ['un bâtiment d\'habitation','destiné au logement d\'une famille']},     
