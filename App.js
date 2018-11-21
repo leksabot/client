@@ -33,17 +33,8 @@ const LangNav = createTabNavigator({
   }
 })
 
-const GameNav = createTabNavigator({
-  'Quiz': Quiz,
-  'Hangman': HangMan
-}, {
-  navigationOptions: {
-    tabBarVisible: false
-  }
-})
-
 // sidebar for chat and game
-const SidebarStack = createDrawerNavigator({'Chat': LangNav, 'Game': GameNav, HangManPlayGame: HangManPlay}, {
+const SidebarStack = createDrawerNavigator({'Chat': LangNav, 'Quiz': Quiz, 'Hangman': HangMan, 'HangManPlayGame': HangManPlay}, {
   contentComponent: SidebarComponent,
   drawerWidth: Dimensions.get('window').width - 130
 })
