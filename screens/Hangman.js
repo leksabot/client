@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react'
 import {Dimensions,StyleSheet, Text, View, ScrollView,  Alert, TouchableOpacity, Image, des} from 'react-native'
 import CountryPicker from 'react-native-country-picker-modal'
+import { NavigationEvents } from 'react-navigation'
 import SoundPlayer from 'react-native-sound'
 const dimensions = Dimensions.get('window');
 
@@ -20,19 +21,15 @@ class BackgroundImage extends Component {
   }
 }
 export default class HangmanStart extends Component {
-  beforeDestroy() {
-    alert('ddd')
-  }
   constructor(props) {
     super(props)
     this.state = {
       linksound:null,
+      lang:'EN'
     };
     
   }
   async componentWillMount() {   
-    if(this.state.linksound!=null)
-        alert('linksound')
     let testInfo = {
       url:'https://storage.googleapis.com/blogkeren/mslow1.mp3', 
       basePath: SoundPlayer.MAIN_BUNDLE,
@@ -44,46 +41,56 @@ export default class HangmanStart extends Component {
         return;
       }
       sound.setNumberOfLoops(-1);
-      this.setState({ play:true})
       sound.setVolume(0.5).play(() => {
         sound.release();
       });
     };
-    if(this.state.linksound!=null){
-      // this.state.linksound.stop().release();
-      // this.setState({ linksound:null})
-    }else
-    {
-      let sound = await new SoundPlayer(testInfo.url, testInfo.basePath, error => callback(error, sound));
+    if(this.state.linksound==null){
+      let sound = new SoundPlayer(testInfo.url, testInfo.basePath, error => callback(error, sound));
       this.setState({ linksound:sound})
     }   
   }
-  componentWillUnmount(){
-    alert('call')
-    if(this.state.linksound!=null){
-      this.state.linksound.stop().release();
-      this.setState({ linksound:null})
-    }
-  }
-  startgame=()=>{
+  stopmusic=()=>{
+    //alert('stoppp')
     if(this.state.linksound!=null){
       this.state.linksound.stop().release();
       this.setState({ linksound:null})
     }  
-    this.props.navigation.navigate('HangManPlayGame')
+  }
+  componentWillUnmount(){
+    this.stopmusic()
+  }
+  startgame=()=>{
+    this.stopmusic()
+    this.props.navigation.navigate('HangManPlayGame', {
+      lang: this.state.lang,
+    }); 
   }
   render() {
     return (
       <View >
+        <NavigationEvents
+            onDidBlur={() => this.stopmusic()}
+          />
         <View z={2} style={{backgroundColor: '#ffffff', position: 'absolute', left:0, top:0,resizeMode: 'contain',height: dimensions.height, width: dimensions.width}}>
             <Image source={require('../assets/background.png')}
                     style={styles.backgroundImage}>
               </Image>
         </View>
-        <View z={1} style={{ position: 'absolute', left:155, top:510, height: 98, width: 100 }}>
-          <TouchableOpacity  style={styles.button}  onPress={() => this.startgame()}>
-            <Text style={styles.txwhite}>Play</Text>
-          </TouchableOpacity>
+        <View z={1} style={{ position: 'absolute', left:150, top:300, height: 98, width: 100 }}>
+          <View style={{flexDirection: 'row', marginBottom: 30,left:30}}>
+              <TouchableOpacity style={{backgroundColor: 'transparent', paddingVertical: 10, paddingHorizontal: 30, borderColor: '#ffffff', borderBottomWidth: this.state.lang === 'EN' ? 1 : 0}} onPress={() => {this.setState({ lang: 'EN' })}}>
+                <Text style={{fontWeight: 'bold',color: this.state.lang === 'EN' ? 'white' : 'grey'}}>EN</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{backgroundColor: 'transparent', paddingVertical: 10, paddingHorizontal: 30, borderColor: '#ffffff', borderBottomWidth: this.state.lang === 'FR' ? 1 : 0}} onPress={() => {this.setState({ lang: 'FR' })}}>
+                <Text style={{fontWeight: 'bold',color: this.state.lang === 'FR' ? 'white' : 'grey'}}>FR</Text>
+              </TouchableOpacity>
+          </View>
+          <View >
+            <TouchableOpacity style={styles.button} onPress={() => this.startgame()}>
+              <Text style={styles.txwhite}>{this.state.lang === 'EN' ? 'Play' : 'Commencez!' } </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>     
     )
@@ -100,7 +107,7 @@ const styles = StyleSheet.create({
   txwhite: {
     fontSize: 16,
     textAlign: 'center',
-    color: 'white',
+    color: '#FF3F04',
     fontWeight: 'bold',
   },
   text: {
@@ -118,9 +125,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#d1ab71',
   },
   button: {
-    width:'100%',
+    borderRadius: 5,
+    width: 200,
     alignItems: 'center',
-    backgroundColor: '#ff3f40',
+    backgroundColor: '#fff',
     color: 'black',
     padding: 10,
     marginBottom: 20,
