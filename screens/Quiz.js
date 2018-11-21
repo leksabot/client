@@ -82,11 +82,11 @@ export default class Game extends Component {
       let trueIndex = questions[questionIndex].answer
       let newScore = score
       if (num === trueIndex) {
-        color[num - 1] = '#04FF3F'
+        color[num - 1] = '#40FF3F'
         newScore ++
       } else {
         color[num - 1] = '#FF3F40'
-        color[trueIndex - 1] = '#04FF3F'
+        color[trueIndex - 1] = '#40FF3F'
       }
       this.setState({
         color: color,
