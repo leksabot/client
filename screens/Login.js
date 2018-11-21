@@ -62,7 +62,7 @@ class Login extends Component {
         <View style={styles.subcontainer}>
           <Image
             style={{width: 180, height: 180}}
-            source={require('../assets/bot.png')}
+            source={require('../assets/bot.jpg')}
           />
           <Text style={styles.welcome}>Login</Text>
           {

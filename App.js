@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Provider } from 'react-redux'
 import store from './store/index'
 import { createStackNavigator, createDrawerNavigator, createTabNavigator } from 'react-navigation'
-import { StyleSheet, Dimensions, BackHandler, Alert } from 'react-native'
+import { StyleSheet, Dimensions, BackHandler, Alert, AsyncStorage } from 'react-native'
 import Splash from './screens/Splash'
 import HangMan from './screens/Hangman'
 import HangManPlay from './screens/HangmanPlay'
@@ -62,8 +62,19 @@ const RootStack = createStackNavigator(
 )
 
 export default class App extends Component {
+  state = {
+    user: {}
+  }
 
   componentDidMount() {
+    AsyncStorage.getItem(`user`)
+    .then(user => {
+      if (user) {
+        this.setState({
+          user: user
+        })
+      }
+    })
     // made back button on Android disable
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       return true
@@ -78,7 +89,7 @@ export default class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <RootStack />
+        <RootStack user={this.state.user}/>
       </Provider>
     )
   }
