@@ -206,9 +206,6 @@ class Chat extends Component {
         console.log('response upload', response)
         let reply = response.data.data.translatedText.split('\n').join(' ') || response.data.data[0].translatedText.split('\n').join(' ')
         this.sendImg(reply)
-        this.setState  ({
-          loading : false
-        })
       })
       .catch(err => {
         this.setState  ({
@@ -229,7 +226,8 @@ class Chat extends Component {
         image: 'file://' + this.state.srcImg,
         time: getHourAndMinute(),
         user: 1
-      }]
+      }],
+      loading: false
     }, () => {
       const imgsend = setTimeout(() => {
         this.flatListSTE()
@@ -275,13 +273,6 @@ class Chat extends Component {
         originalLanguage: this.props.langcode
       }
     })
-    // let define = axios({
-    //   url: this.props.langcode === 'en' ? 'https://apileksabot23.efratsadeli.online/df/define' : 'https://apileksabot23.efratsadeli.online/df/definefrench',
-    //   method: 'post',
-    //   data: {
-    //     keyword: item,
-    //   }
-    // })
     
     let define
     if ((this.props.langcode === 'en')) {
@@ -343,10 +334,10 @@ class Chat extends Component {
         <TouchableOpacity style={styles.menubox} onPress={() => this.props.navigation.openDrawer()}>
           <Icon name='navicon' style={styles.menuicon}/>
         </TouchableOpacity>
-        <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 10}}>
+        <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 60}}>
           { this.state.loading && 
             <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
-              <ActivityIndicator size={50} color="#FF3F04" />
+              <ActivityIndicator size={50} color="#ff3f40" />
             </View>
           }
           <NavigationEvents
@@ -422,11 +413,11 @@ class Chat extends Component {
           <TextInput style={[styles.input, {height: Math.max(44, this.state.inputHeight + 3)}]} multiline={true} onChangeText={(text) => {this.changeValue('newMsg', text)}} onContentSizeChange={({ nativeEvent }) => {this.changeValue('inputHeight', nativeEvent.contentSize.height)}} value={this.state.newMsg} placeholder={this.props.langcode === 'en' ? 'Say something to Leksa' : 'Dites quelque chose à Leksa'} />
           { this.state.newMsg.length > 0 ?
             <TouchableOpacity style={[styles.send, {height: Math.max(44, this.state.inputHeight + 3)}]} onPress={() => this.sendMsg()} >
-              <Icon name='paper-plane' size={20} color='#FF3F04'/>
+              <Icon name='paper-plane' size={20} color='#ff3f40'/>
             </TouchableOpacity>
             :
             <TouchableOpacity style={styles.send} onPress={() => {this.pickImage()}}>
-              <Icon name='camera' size={20} color='#FF3F04'/>
+              <Icon name='camera' size={20} color='#ff3f40'/>
             </TouchableOpacity>
           }
         </View>
@@ -465,7 +456,7 @@ class Chat extends Component {
               onPress={() => {
                 this.changeValue('translateModal')
               }}
-              style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#FF3F04', width: '30%', height: 50, marginLeft: '35%', borderRadius: 15, marginBottom: 50}}
+              style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#ff3f40', width: '30%', height: 50, marginLeft: '35%', borderRadius: 15, marginBottom: 50}}
             >
               <Text style={{color: 'white', textAlign: 'center', fontSize: 20}}>Close</Text>
             </TouchableOpacity>
@@ -490,7 +481,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderTopWidth: 120,
-    borderColor: '#FF3F04',
+    borderColor: '#ff3f40',
   },
   subcontainer: {
     width: 300,
@@ -508,7 +499,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     borderTopWidth: 2,
-    borderColor: '#FF3F04',
+    borderColor: '#ff3f40',
     backgroundColor: 'white'
   },
   input: {
@@ -531,7 +522,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 5,
     marginBottom: 10,
-    backgroundColor: '#FF3F04',
+    backgroundColor: '#ff3f40',
   },
   bubble2: {
     flex: 1,
@@ -580,8 +571,9 @@ const styles = StyleSheet.create({
   },
   menubox: {
     position: 'absolute',
-    backgroundColor: 'red',
+    backgroundColor: '#ff3f40',
     left: 20,
-    top: 10
+    top: 10,
+    elevation: 5
   }
 })

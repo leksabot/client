@@ -38,31 +38,14 @@ const logout = async (props) => {
   }
 }
 
-let user = {}
-
-AsyncStorage.getItem('user')
-.then(data => {
-  user = JSON.parse(data)
-})
-.catch(err => {
-  alert(err)
-})
-
 const SidebarComponent = (props) => (
   <View style={styles.container}>
     <ScrollView>
       <View style={styles.navSection}>
       <View style={styles.navUser}>
-          {/* <Image
-            style={{width: 60, height: 60, borderRadius: 200}}
-            source={{
-              uri:
-                'https://www.gravatar.com/avatar/e97ef0bb05d2af2d6674e0dc3e0ba14e?s=328&d=identicon&r=PG&f=1',
-              }}
-          /> */}
           <View>
-            <Text style={styles.navName}>{ user.name }</Text>
-            <Text style={styles.navEmail}>{ user.email }</Text>
+            <Text style={styles.navName}>{ props.user && props.user.name }</Text>
+            <Text style={styles.navEmail}>{ props.user && props.user.email }</Text>
           </View>
         </View>
       </View>
@@ -115,7 +98,7 @@ const styles = StyleSheet.create({
   navSection: {
     paddingLeft: 15,
     paddingVertical: 20,
-    backgroundColor: '#FF3F04',
+    backgroundColor: '#FF3F40',
     marginBottom: 10
   },
   menuSection: {

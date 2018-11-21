@@ -12,9 +12,9 @@ export default class Splash extends Component {
   componentDidMount() {
     AsyncStorage.getItem(`user`)
     .then(user => {
-      if (user && user !== null) {
+      if (user) {
         this.setState({
-          landing: 'Chat'
+          landing: 'Menu'
         })
       }
     })
@@ -30,8 +30,9 @@ export default class Splash extends Component {
     return (
       <View style={styles.container}>
         <Image
-        source={{uri: 'https://cdn.dribbble.com/users/97383/screenshots/2055128/loading-white-d.gif'}}
-        style={{width: 300, height: 300 }}/>
+        source={require('../assets/minileksa_blink.gif')}
+        style={{width: 500, height: 800 }}
+        />
       </View>
     )
   }
