@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {StyleSheet, Text, View, ScrollView, Image, Modal, Button, TextInput, TouchableOpacity, Alert, FlatList, Dimensions, AsyncStorage, ActivityIndicator} from 'react-native'
+import {StyleSheet, Text, View, ScrollView, Image, Modal, TextInput, TouchableOpacity, Alert, FlatList, Dimensions, AsyncStorage, ActivityIndicator} from 'react-native'
 import axios from 'axios'
 import { NavigationEvents, withNavigation } from 'react-navigation'
 import { getHourAndMinute } from '../helpers/Chat'
@@ -47,6 +47,8 @@ class Chat extends Component {
         }, () => {
           this.fetchMessages()
         })
+      } else {
+        this.props.navigation.navigate('Login')
       }
     })
     .catch(err => {
@@ -93,14 +95,22 @@ class Chat extends Component {
     }, cb)
   }
 
-  flatListSTE () {
+  flatListSTE (cb) {
     this.flatListRef.scrollToEnd()
     if (this.state.loading) {
       setTimeout(() => {
         this.setState({
           loading: false
+        }, () => {
+          if (cb) {
+            cb()
+          }
         })
       }, this.state.messages.length * 100)
+    } else {
+      if (cb) {
+        cb()
+      }
     }
   }
 
@@ -185,21 +195,23 @@ class Chat extends Component {
   }
 
   uploadPicture() {
-    this.setState  ({loading : true })
-    const {uri, type, fileName} = this.state
-    const toUpload = new FormData()
-    toUpload.append('imagefile', {
-      uri: uri,
-      type: type,
-      name: fileName,
-    })
-    toUpload.append('motherlanguage', this.props.langcode)
-    axios({
-      url: 'https://apileksabot23.efratsadeli.online/detectobject/',
-      method: 'post',
-      timeout: 10000,
-      data: toUpload
-    })
+    this.setState({
+      loading: true
+    }, () => {
+      const {uri, type, fileName} = this.state
+      const toUpload = new FormData()
+      toUpload.append('imagefile', {
+        uri: uri,
+        type: type,
+        name: fileName,
+      })
+      toUpload.append('motherlanguage', this.props.langcode)
+      axios({
+        url: 'https://apileksabot23.efratsadeli.online/detectobject/',
+        method: 'post',
+        timeout: 10000,
+        data: toUpload
+      })
       .then((response) => {
         let reply
         if (response.data.data[0]) {
@@ -214,11 +226,14 @@ class Chat extends Component {
           loading : false
         })
         if (err) {
-          console.log(err.response)
+          console.log(err)
+          Alert.alert('An error has occured')
         } else {
           Alert.alert('Image size is too large')
         }
       })
+    })
+    
   }
 
   sendImg(reply) {
@@ -227,30 +242,30 @@ class Chat extends Component {
         image: 'file://' + this.state.srcImg,
         time: getHourAndMinute(),
         user: 1
-      }],
-      loading: false
+      }]
     }, () => {
-      const imgsend = setTimeout(() => {
-        this.flatListSTE()
-      }, 100)
-      Promise.all(imgsend)
-      .then(() => {
+      setTimeout(() => {
         this.setState({
-          messages: [...this.state.messages, {
-            text: reply,
-            time: getHourAndMinute(),
-            user: 2
-          }]
+          loading: false
         }, () => {
           setTimeout(() => {
-            this.flatListSTE()
+            this.flatListSTE(() => {
+              this.setState({
+                messages: [...this.state.messages, {
+                  text: this.props.langcode === 'en' ? 'I detected: ' + reply : "J'ai détecté: "  + reply,
+                  time: getHourAndMinute(),
+                  user: 2
+                }]
+              }, () => {
+                setTimeout(() => {
+                  this.flatListSTE()
+                }, 100)
+                AsyncStorage.setItem(`messages-${this.props.langcode}`, JSON.stringify(this.state.messages))
+              })
+            })
           }, 100)
-          AsyncStorage.setItem(`messages-${this.props.langcode}`, JSON.stringify(this.state.messages))
         })
-      })
-      .catch(err => {
-        console.log(err.response)
-      })
+      }, 100)
     })
   }
 
@@ -332,12 +347,12 @@ class Chat extends Component {
       <>
         <OfflineNotice />
         <View style={styles.container}>
-          <TouchableOpacity style={styles.menubox} onPress={() => this.props.navigation.openDrawer()}>
+          { !this.state.loading && <TouchableOpacity style={styles.menubox} onPress={() => this.props.navigation.openDrawer()}>
             <Icon name='navicon' style={styles.menuicon}/>
-          </TouchableOpacity>
+          </TouchableOpacity> }
           <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 60}}>
             { this.state.loading && 
-              <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute'}}>
+              <View style={{flex: 1, justifyContent: 'center', top: 0, height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', elevation: 100}}>
                 <ActivityIndicator size={50} color="#ff3f40" />
               </View>
             }
@@ -347,7 +362,7 @@ class Chat extends Component {
             <FlatList
               ref={(ref) => {this.flatListRef = ref}}
               getItemLayout={(data, index) => (
-                {length: 150, offset: 150 * index, index}
+                {length: 200, offset: 200 * index, index}
               )}
               onLayout={() => {
                 setTimeout(() => {
