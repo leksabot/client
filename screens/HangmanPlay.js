@@ -200,7 +200,7 @@ export default class HangmanGame extends Component {
   gotomenu=()=>{
     this.stopmusic()
     this.setState({ visibleModal: null })
-    this.props.navigation.navigate('HangmanGame', {
+    this.props.navigation.navigate('Hangman', {
     }); 
   }
   
