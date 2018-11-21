@@ -293,7 +293,7 @@ export default class HangmanGame extends Component {
           })}
         </View>
         <View style={{ flexDirection: 'row',height: 35,paddingTop: 40 }} >
-          <View style={ {borderRadius: 10, backgroundColor:'#FF3F40',height: 85 ,left:20 ,width:380 }  }>
+          <View style={ {borderRadius: 10, backgroundColor:'#FF3F40',height: 85 ,left:15 ,width:'92%' }  }>
             <Text style={{fontSize: 17,fontWeight: 'bold', textAlign:'left',color:'white', left:4 }}>{this.props.navigation.state.params.lang=='EN' ? 'Hint': 'Allusion'} : {"\n"}{this.state.currentWord ? this.state.currentWord.hint[this.state.currentHint] :''} </Text>
           </View>
         </View>
