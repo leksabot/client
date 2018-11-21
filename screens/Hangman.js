@@ -1,6 +1,5 @@
 import React, {Component, Fragment} from 'react'
 import {Dimensions,StyleSheet, Text, View, ScrollView,  Alert, TouchableOpacity, Image, des} from 'react-native'
-import CountryPicker from 'react-native-country-picker-modal'
 import { NavigationEvents } from 'react-navigation'
 import SoundPlayer from 'react-native-sound'
 const dimensions = Dimensions.get('window');
