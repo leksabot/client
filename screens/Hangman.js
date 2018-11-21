@@ -34,7 +34,7 @@ export default class HangmanStart extends Component {
     SoundPlayer.setCategory('Playback', true);
     const callback = (error, sound) => {
       if (error) {
-        Alert.alert('Error play music', error.message);
+        console.log('Error play music', error.message);
         return;
       }
       sound.setNumberOfLoops(-1);
