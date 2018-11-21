@@ -51,6 +51,7 @@ export default class HangmanGame extends Component {
       winSound:null
     }
   }
+  
   startGame=async()=>{
     
     if(this.props.navigation.state.params.lang=='EN'){
