@@ -22,12 +22,12 @@ export default class HangmanStart extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      linksound:null,
+      linksound: null,
       lang:'EN'
     };
     
   }
-  async componentWillMount() {   
+  async componentWillMount() {
     let testInfo = {
       url:'https://storage.googleapis.com/blogkeren/mslow1.mp3', 
       basePath: SoundPlayer.MAIN_BUNDLE,
