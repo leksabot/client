@@ -9,7 +9,7 @@ export default function(email, password) {
       })
       axios({
         method: 'POST',
-        url: 'https://apileksabot23.efratsadeli.online/user/login',
+        url: 'https://pdsol16ujh.execute-api.ap-southeast-1.amazonaws.com/dev/user/login',
         data: {
           email: email,
           password: password

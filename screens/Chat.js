@@ -49,7 +49,7 @@ class Chat extends Component {
       }
     })
     .catch(err => {
-      alert(err)
+      console.log(err.response)
     })
   }
 
@@ -79,7 +79,7 @@ class Chat extends Component {
       }
     })
     .catch(err => {
-      alert(err)
+      console.log(err.response)
     })
   }
 
@@ -137,7 +137,6 @@ class Chat extends Component {
             setTimeout(() => {
               this.flatListSTE()
             }, 100)
-            // alert(data.emotion)
             this.setState({
               messages: [...this.state.messages, {
                 text: data.emotion,
@@ -159,7 +158,7 @@ class Chat extends Component {
         })
       })
       .catch(err => {
-        alert(err)
+        console.log(err.response)
       })
     })
   }
@@ -167,7 +166,6 @@ class Chat extends Component {
   pickImage() {
     let ImagePicker = require('react-native-image-picker')
     ImagePicker.showImagePicker(options, (response) => {
-      console.log('response ====== ', response)
     
       if (response.didCancel) {
         console.log('User cancelled image picker')
@@ -186,7 +184,6 @@ class Chat extends Component {
   }
 
   uploadPicture() {
-    console.log('masuk upload', this.props.langcode)
     this.setState  ({loading : true })
     const {uri, type, fileName} = this.state
     const toUpload = new FormData()
@@ -203,7 +200,6 @@ class Chat extends Component {
       data: toUpload
     })
       .then((response) => {
-        console.log('response upload', response)
         let reply = response.data.data.translatedText.split('\n').join(' ') || response.data.data[0].translatedText.split('\n').join(' ')
         this.sendImg(reply)
       })
@@ -211,8 +207,8 @@ class Chat extends Component {
         this.setState  ({
           loading : false
         })
-        if (err.response) {
-          Alert.alert(err.response)
+        if (err) {
+          console.log(err.response)
         } else {
           Alert.alert('Image size is too large')
         }
@@ -220,7 +216,6 @@ class Chat extends Component {
   }
 
   sendImg(reply) {
-    console.log('masuk send image', this.state, reply)
     this.setState({
       messages: [...this.state.messages, {
         image: 'file://' + this.state.srcImg,
@@ -249,7 +244,6 @@ class Chat extends Component {
       })
       .catch(err => {
         console.log(err.response)
-        alert(err)
       })
     })
   }
@@ -265,7 +259,7 @@ class Chat extends Component {
       item = item.toLowerCase()
     }
     let translate = axios({
-      url: 'https://apileksabot23.efratsadeli.online/translate/from',
+      url: 'https://pdsol16ujh.execute-api.ap-southeast-1.amazonaws.com/dev/translate/from',
       method: 'post',
       data: {
         text: item,
@@ -321,7 +315,6 @@ class Chat extends Component {
     })
     .catch(err => {
       console.log(err.response)
-      alert(err)
       this.setState({
         loading: false,
       })
@@ -426,9 +419,7 @@ class Chat extends Component {
           animationType="slide"
           transparent={false}
           visible={this.state.translateModal}
-          onRequestClose={() => {
-            Alert.alert('Tap close to go back')
-        }}>
+          onRequestClose={() => {}}>
           <View style={styles.container}>
             <View style={styles.modcontainer}>
               <View style={styles.subcontainer}>

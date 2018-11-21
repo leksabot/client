@@ -19,7 +19,7 @@ export default class Game extends Component {
 
   fetchQuestions() {
     axios({
-      url: 'https://apileksabot23.efratsadeli.online/question/list',
+      url: 'https://pdsol16ujh.execute-api.ap-southeast-1.amazonaws.com/dev/question/list',
       method: 'post',
       data: {
         language: this.state.lang,
@@ -49,7 +49,7 @@ export default class Game extends Component {
       })
     })
     .catch(err => {
-      alert(err)
+      console.log(err.response)
     })
   }
 
@@ -70,7 +70,7 @@ export default class Game extends Component {
       })
     })
     .catch(err => {
-      alert(err)
+      console.log(err.response)
     })
   }
 
@@ -96,7 +96,7 @@ export default class Game extends Component {
       if (questionIndex === 4) {
         AsyncStorage.setItem('quiz-score' + this.state.lang, String(newScore))
         .catch(err => {
-          alert(err)
+          console.log(err.response)
         })
       }
       setTimeout(() => {
