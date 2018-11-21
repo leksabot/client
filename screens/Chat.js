@@ -95,14 +95,22 @@ class Chat extends Component {
     }, cb)
   }
 
-  flatListSTE () {
+  flatListSTE (cb) {
     this.flatListRef.scrollToEnd()
     if (this.state.loading) {
       setTimeout(() => {
         this.setState({
           loading: false
+        }, () => {
+          if (cb) {
+            cb()
+          }
         })
       }, this.state.messages.length * 100)
+    } else {
+      if (cb) {
+        cb()
+      }
     }
   }
 
@@ -218,7 +226,8 @@ class Chat extends Component {
           loading : false
         })
         if (err) {
-          Alert.alert(err)
+          console.log(err)
+          Alert.alert('An error has occured')
         } else {
           Alert.alert('Image size is too large')
         }
@@ -239,27 +248,22 @@ class Chat extends Component {
         this.setState({
           loading: false
         }, () => {
-          const imgsend = setTimeout(() => {
-            this.flatListSTE()
-          }, 100)
-          Promise.all(imgsend)
-          .then(() => {
-            this.setState({
-              messages: [...this.state.messages, {
-                text: reply,
-                time: getHourAndMinute(),
-                user: 2
-              }]
-            }, () => {
-              setTimeout(() => {
-                this.flatListSTE()
-              }, 200)
-              AsyncStorage.setItem(`messages-${this.props.langcode}`, JSON.stringify(this.state.messages))
+          setTimeout(() => {
+            this.flatListSTE(() => {
+              this.setState({
+                messages: [...this.state.messages, {
+                  text: this.props.langcode === 'en' ? 'I detected: ' + reply : "J'ai détecté: "  + reply,
+                  time: getHourAndMinute(),
+                  user: 2
+                }]
+              }, () => {
+                setTimeout(() => {
+                  this.flatListSTE()
+                }, 100)
+                AsyncStorage.setItem(`messages-${this.props.langcode}`, JSON.stringify(this.state.messages))
+              })
             })
-          })
-          .catch(err => {
-            console.log(err.response)
-          })
+          }, 100)
         })
       }, 100)
     })
@@ -358,7 +362,7 @@ class Chat extends Component {
             <FlatList
               ref={(ref) => {this.flatListRef = ref}}
               getItemLayout={(data, index) => (
-                {length: 150, offset: 150 * index, index}
+                {length: 200, offset: 200 * index, index}
               )}
               onLayout={() => {
                 setTimeout(() => {
