@@ -4,6 +4,7 @@ import {StyleSheet, Text, View, ScrollView, Image, Modal, Button, TextInput, Tou
 import axios from 'axios'
 import { NavigationEvents, withNavigation } from 'react-navigation'
 import { getHourAndMinute } from '../helpers/Chat'
+import OfflineNotice from '../components/OfflineNotice';
 
 const options = {
   title: 'Select Image',
@@ -323,137 +324,140 @@ class Chat extends Component {
 
   render() {
     return (
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.menubox} onPress={() => this.props.navigation.openDrawer()}>
-          <Icon name='navicon' style={styles.menuicon}/>
-        </TouchableOpacity>
-        <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 60}}>
-          { this.state.loading && 
-            <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
-              <ActivityIndicator size={50} color="#ff3f40" />
-            </View>
-          }
-          <NavigationEvents
-            onDidBlur={() => this.fetchMessages()}
-          />
-          <FlatList
-            ref={(ref) => {this.flatListRef = ref}}
-            getItemLayout={(data, index) => (
-              {length: 150, offset: 150 * index, index}
-            )}
-            onLayout={() => {
-              setTimeout(() => {
-                this.flatListSTE()
-              }, 100)
-            }}
-            data={this.state.messages}
-            renderItem={({item, index}) => {
-              let message = item
-              return (
-                <>
-                  { message.type === 'card' ?
-                    <View style={styles[`bubble${message.user}`]}>
-                      <FlatList listKey={'titleList' + index} style={[{flexDirection: 'row', borderBottomWidth: 1, margin: 5}, styles[`bubbleText${message.user}`]]}
-                        data = {message.text.title.split(' ')}
-                        renderItem={({ item }) =>
-                          <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
-                            <Text style={[styles[`text${message.user}`], {fontWeight: "bold", fontSize: 17}]}>{ item }</Text>
-                          </TouchableOpacity>
-                        }
-                        keyExtractor={(item, index) => index.toString()}
-                      />
-                      <FlatList listKey={'summaryList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
-                        data = {message.text.summary.split('. ').slice(0, 2).join('. ').split(' ')}
-                        renderItem={({ item, index }) =>
-                          <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
-                            <Text style={styles[`text${message.user}`]}>{ item }</Text>
-                          </TouchableOpacity>
-                        }
-                        keyExtractor={(item, index) => index.toString()}
-                      />
-                      <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
-                    </View>
-                  : message.type === 'emotion' ?
-                    message.text === 'happy' ? <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/happy.png')} />
-                    : message.text === 'sad' ? <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/sad.png')} />
-                    : <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/flattered.png')} />
-                  : <View style={styles[`bubble${message.user}`]}>
-                    {
-                      message.text ? (
-                        <FlatList listKey={'regList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
-                          data = {message.text.split(' ')}
+      <>
+        <OfflineNotice />
+        <View style={styles.container}>
+          <TouchableOpacity style={styles.menubox} onPress={() => this.props.navigation.openDrawer()}>
+            <Icon name='navicon' style={styles.menuicon}/>
+          </TouchableOpacity>
+          <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 60}}>
+            { this.state.loading && 
+              <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
+                <ActivityIndicator size={50} color="#ff3f40" />
+              </View>
+            }
+            <NavigationEvents
+              onDidBlur={() => this.fetchMessages()}
+            />
+            <FlatList
+              ref={(ref) => {this.flatListRef = ref}}
+              getItemLayout={(data, index) => (
+                {length: 150, offset: 150 * index, index}
+              )}
+              onLayout={() => {
+                setTimeout(() => {
+                  this.flatListSTE()
+                }, 100)
+              }}
+              data={this.state.messages}
+              renderItem={({item, index}) => {
+                let message = item
+                return (
+                  <>
+                    { message.type === 'card' ?
+                      <View style={styles[`bubble${message.user}`]}>
+                        <FlatList listKey={'titleList' + index} style={[{flexDirection: 'row', borderBottomWidth: 1, margin: 5}, styles[`bubbleText${message.user}`]]}
+                          data = {message.text.title.split(' ')}
                           renderItem={({ item }) =>
+                            <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                              <Text style={[styles[`text${message.user}`], {fontWeight: "bold", fontSize: 17}]}>{ item }</Text>
+                            </TouchableOpacity>
+                          }
+                          keyExtractor={(item, index) => index.toString()}
+                        />
+                        <FlatList listKey={'summaryList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
+                          data = {message.text.summary.split('. ').slice(0, 2).join('. ').split(' ')}
+                          renderItem={({ item, index }) =>
                             <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
                               <Text style={styles[`text${message.user}`]}>{ item }</Text>
                             </TouchableOpacity>
                           }
                           keyExtractor={(item, index) => index.toString()}
                         />
-                      ) : (
-                        <Image source={{uri: message.image}} style={styles.uploadImg} />
-                      )
+                        <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
+                      </View>
+                    : message.type === 'emotion' ?
+                      message.text === 'happy' ? <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/happy.png')} />
+                      : message.text === 'sad' ? <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/sad.png')} />
+                      : <Image style={{width: 175, height: 175, marginLeft: 20, marginVertical: 10}} source={require('../assets/flattered.png')} />
+                    : <View style={styles[`bubble${message.user}`]}>
+                      {
+                        message.text ? (
+                          <FlatList listKey={'regList' + index} style={[{flexDirection: 'row'}, styles[`bubbleText${message.user}`]]}
+                            data = {message.text.split(' ')}
+                            renderItem={({ item }) =>
+                              <TouchableOpacity onPress={() => {this.translate(item)}} style={ message.user === 1 ? {paddingLeft: 3} : {paddingRight: 3}}>
+                                <Text style={styles[`text${message.user}`]}>{ item }</Text>
+                              </TouchableOpacity>
+                            }
+                            keyExtractor={(item, index) => index.toString()}
+                          />
+                        ) : (
+                          <Image source={{uri: message.image}} style={styles.uploadImg} />
+                        )
+                      }
+                        <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
+                      </View>
                     }
-                      <Text style={[styles[`text${item.user}`], { fontSize: 12, paddingHorizontal: 10, paddingBottom: 5 }]}>{ String(item.time) }</Text>
-                    </View>
-                  }
-                </>
-              )
-            }}
-            key keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-        <View style={[styles.inputBox, {height: Math.max(50, this.state.inputHeight + 3)}]}>
-          <TextInput style={[styles.input, {height: Math.max(44, this.state.inputHeight + 3)}]} multiline={true} onChangeText={(text) => {this.changeValue('newMsg', text)}} onContentSizeChange={({ nativeEvent }) => {this.changeValue('inputHeight', nativeEvent.contentSize.height)}} value={this.state.newMsg} placeholder={this.props.langcode === 'en' ? 'Say something to Leksa' : 'Dites quelque chose à Leksa'} />
-          { this.state.newMsg.length > 0 ?
-            <TouchableOpacity style={[styles.send, {height: Math.max(44, this.state.inputHeight + 3)}]} onPress={() => this.sendMsg()} >
-              <Icon name='paper-plane' size={20} color='#ff3f40'/>
-            </TouchableOpacity>
-            :
-            <TouchableOpacity style={styles.send} onPress={() => {this.pickImage()}}>
-              <Icon name='camera' size={20} color='#ff3f40'/>
-            </TouchableOpacity>
-          }
-        </View>
+                  </>
+                )
+              }}
+              key keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
+          <View style={[styles.inputBox, {height: Math.max(50, this.state.inputHeight + 3)}]}>
+            <TextInput style={[styles.input, {height: Math.max(44, this.state.inputHeight + 3)}]} multiline={true} onChangeText={(text) => {this.changeValue('newMsg', text)}} onContentSizeChange={({ nativeEvent }) => {this.changeValue('inputHeight', nativeEvent.contentSize.height)}} value={this.state.newMsg} placeholder={this.props.langcode === 'en' ? 'Say something to Leksa' : 'Dites quelque chose à Leksa'} />
+            { this.state.newMsg.length > 0 ?
+              <TouchableOpacity style={[styles.send, {height: Math.max(44, this.state.inputHeight + 3)}]} onPress={() => this.sendMsg()} >
+                <Icon name='paper-plane' size={20} color='#ff3f40'/>
+              </TouchableOpacity>
+              :
+              <TouchableOpacity style={styles.send} onPress={() => {this.pickImage()}}>
+                <Icon name='camera' size={20} color='#ff3f40'/>
+              </TouchableOpacity>
+            }
+          </View>
 
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.translateModal}
-          onRequestClose={() => {}}>
-          <View style={styles.container}>
-            <View style={styles.modcontainer}>
-              <View style={styles.subcontainer}>
-              <Text style={{fontSize: 40, padding: 10, borderBottomWidth: 1}}>{ this.state.translateOriText } <Text style={{fontSize: 20}}>({ this.props.langcode })</Text></Text>
-              <Text style={{fontSize: 25, padding: 5}}>{ this.state.translatedText } <Text style={{fontSize: 15}}>({ this.state.motherlang.toLowerCase() })</Text></Text>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={this.state.translateModal}
+            onRequestClose={() => {}}>
+            <View style={styles.container}>
+              <View style={styles.modcontainer}>
+                <View style={styles.subcontainer}>
+                <Text style={{fontSize: 40, padding: 10, borderBottomWidth: 1}}>{ this.state.translateOriText } <Text style={{fontSize: 20}}>({ this.props.langcode })</Text></Text>
+                <Text style={{fontSize: 25, padding: 5}}>{ this.state.translatedText } <Text style={{fontSize: 15}}>({ this.state.motherlang.toLowerCase() })</Text></Text>
+                </View>
+                <ScrollView style={{marginTop: 20, minHeight: 150, paddingLeft: 20}} contentContainerStyle={{flex: 0, flexGrow: 2}}>
+                {
+                  this.props.langcode === 'en' ? (
+                  <>
+                    { this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
+                    { this.state.definition.map((def, index) =>
+                      <Text key={index} style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
+                    )}
+                  </>
+                  ) : (
+                  <>
+                    <Text style={{fontSize: 15, padding: 5, marginHorizontal: 40, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>la définition de { this.state.translateOriText } est : { this.state.definition }</Text>
+                  </>
+                  )
+                }
+                </ScrollView>
+                <TouchableOpacity
+                  onPress={() => {
+                    this.changeValue('translateModal')
+                  }}
+                  style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#ff3f40', width: '30%', height: 50, marginLeft: '35%', borderRadius: 15, marginBottom: 50}}
+                >
+                  <Text style={{color: 'white', textAlign: 'center', fontSize: 20}}>Close</Text>
+                </TouchableOpacity>
               </View>
             </View>
-            <ScrollView style={{marginTop: 20, minHeight: 150, paddingLeft: 20}} contentContainerStyle={{flex: 0, flexGrow: 2}}>
-            {
-              this.props.langcode === 'en' ? (
-              <>
-                { this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
-                { this.state.definition.map((def, index) =>
-                  <Text key={index} style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
-                )}
-              </>
-              ) : (
-              <>
-                <Text style={{fontSize: 15, padding: 5, marginHorizontal: 40, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>la définition de { this.state.translateOriText } est : { this.state.definition }</Text>
-              </>
-              )
-            }
-            </ScrollView>
-            <TouchableOpacity
-              onPress={() => {
-                this.changeValue('translateModal')
-              }}
-              style={{justifyContent: 'center', alignItems: 'center', backgroundColor: '#ff3f40', width: '30%', height: 50, marginLeft: '35%', borderRadius: 15, marginBottom: 50}}
-            >
-              <Text style={{color: 'white', textAlign: 'center', fontSize: 20}}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
-      </View>
+          </Modal>
+        </View>
+      </>
     )
   }
 }
