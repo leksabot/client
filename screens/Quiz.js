@@ -76,7 +76,7 @@ export default class Game extends Component {
 
   nextQ(num) {
     const { questions, questionIndex, answered, score, timer } = this.state
-    if (answered === questionIndex && (timer > 0 || num === 0) && questionIndex < 5 && questions[questionIndex]) {
+    if (answered === questionIndex && (timer > 0 || num === 0) && questionIndex < 5 && questions[questionIndex] && questions[questionIndex].answer) {
       num = Number(num)
       let color = Array(4).fill('black')
       let trueIndex = questions[questionIndex].answer
@@ -162,7 +162,7 @@ export default class Game extends Component {
               </View>
             : this.state.questions && this.state.questions[this.state.questionIndex] ?
               <ScrollView contentContainerStyle={{justifyContent: 'center', alignItems: 'center', marginHorizontal: '10%', marginVertical: '20%'}}>
-                <Text style={{textAlign: "center", fontSize: 25, marginTop: 50, marginBottom: 5}}>
+                <Text style={{textAlign: "center", fontSize: 25, marginTop: Dimensions.get('window').height * 0.075, marginBottom: 5}}>
                   { this.state.timer }
                 </Text>
                 <Text style={{textAlign: "center", fontSize: 20, marginTop: 5, marginBottom: 30, minHeight: 50}}>
