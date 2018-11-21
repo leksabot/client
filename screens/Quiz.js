@@ -162,7 +162,7 @@ export default class Game extends Component {
               </View>
             : this.state.questions && this.state.questions[this.state.questionIndex] ?
               <ScrollView contentContainerStyle={{justifyContent: 'center', alignItems: 'center', marginHorizontal: '10%', marginVertical: '20%'}}>
-                <Text style={{textAlign: "center", fontSize: 25, marginTop: Dimensions.get('window').height * 0.075, marginBottom: 5}}>
+                <Text style={{textAlign: "center", fontSize: 25, marginTop: Dimensions.get('window').height * 0.09, marginBottom: 5}}>
                   { this.state.timer }
                 </Text>
                 <Text style={{textAlign: "center", fontSize: 20, marginTop: 5, marginBottom: 30, minHeight: 50}}>
