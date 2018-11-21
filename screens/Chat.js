@@ -197,11 +197,16 @@ class Chat extends Component {
     axios({
       url: 'https://apileksabot23.efratsadeli.online/detectobject/',
       method: 'post',
-      timeout: 5000,
+      timeout: 10000,
       data: toUpload
     })
       .then((response) => {
-        let reply = response.data.data.translatedText.split('\n').join(' ') || response.data.data[0].translatedText.split('\n').join(' ')
+        let reply
+        if (response.data.data[0]) {
+          reply = response.data.data[0].translatedText.split('\n').join(' ')
+        } else {
+          reply = response.data.data.translatedText.split('\n').join(' ')
+        }
         this.sendImg(reply)
       })
       .catch(err => {
