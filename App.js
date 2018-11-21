@@ -4,7 +4,6 @@ import store from './store/index'
 import { createStackNavigator, createDrawerNavigator, createTabNavigator } from 'react-navigation'
 import { StyleSheet, Dimensions, BackHandler, Alert } from 'react-native'
 import Splash from './screens/Splash'
-import Language from './screens/Language'
 import HangMan from './screens/Hangman'
 import HangManPlay from './screens/HangmanPlay'
 import Quiz from './screens/Quiz'
@@ -12,16 +11,6 @@ import Chat from './screens/Chat'
 import Register from './screens/Register'
 import Login from './screens/Login'
 import SidebarComponent from './components/Sidebar'
-
-const LoginStack = createStackNavigator({'Login': Login}, {
-  headerMode: 'none',
-  initialRouteName: 'Login'
-})
-
-const RegisterStack = createStackNavigator({'Register': Register}, {
-  headerMode: 'none',
-  initialRouteName: 'Register'
-})
 
 const EnChat = () => {
   return (
@@ -62,10 +51,9 @@ const SidebarStack = createDrawerNavigator({'Chat': LangNav, 'Game': GameNav, Ha
 const RootStack = createStackNavigator(
   {
     'Splash': Splash,
-    'Language': Language,
     'Menu': SidebarStack,
-    'Login': LoginStack,
-    'Register': RegisterStack
+    'Login': Login,
+    'Register': Register,
   },
   {
     initialRouteName: 'Splash',
@@ -136,5 +124,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 5,
     left: '10%'
+  },
+  menuicon: {
+    position: 'absolute',
+    backgroundColor: 'red',
+    left: 10,
+    top: 10
   }
 })

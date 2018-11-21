@@ -1,8 +1,8 @@
 import React, {Component, Fragment} from 'react'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import {StyleSheet, Text, View, ScrollView, Image, Modal, TextInput, TouchableOpacity, Alert, FlatList, Dimensions, AsyncStorage, ActivityIndicator} from 'react-native'
+import {StyleSheet, Text, View, ScrollView, Image, Modal, Button, TextInput, TouchableOpacity, Alert, FlatList, Dimensions, AsyncStorage, ActivityIndicator} from 'react-native'
 import axios from 'axios'
-import { NavigationEvents } from 'react-navigation'
+import { NavigationEvents, withNavigation } from 'react-navigation'
 import { getHourAndMinute } from '../helpers/Chat'
 
 const options = {
@@ -13,7 +13,7 @@ const options = {
   },
 }
 
-export default class Chat extends Component {
+class Chat extends Component {
 
   constructor(props) {
     super(props)
@@ -186,7 +186,7 @@ export default class Chat extends Component {
   }
 
   uploadPicture() {
-    console.log('masuk upload')
+    console.log('masuk upload', this.props.langcode)
     this.setState  ({loading : true })
     const {uri, type, fileName} = this.state
     const toUpload = new FormData()
@@ -195,22 +195,31 @@ export default class Chat extends Component {
       type: type,
       name: fileName,
     })
-    toUpload.append('motherlanguage', 'en')
+    toUpload.append('motherlanguage', this.props.langcode)
     axios({
-      url: 'https://apileksabot23.efratsadeli.online/detectobject/gcp',
+      url: 'https://apileksabot23.efratsadeli.online/detectobject/',
       method: 'post',
+      timeout: 5000,
       data: toUpload
     })
-    .then((response) => {
-      console.log('response upload', response)
-      this.sendImg(reply = response.data.data[0].originalText)
-      this.setState  ({
-        loading : false
+      .then((response) => {
+        console.log('response upload', response)
+        let reply = response.data.data.translatedText.split('\n').join(' ') || response.data.data[0].translatedText.split('\n').join(' ')
+        this.sendImg(reply)
+        this.setState  ({
+          loading : false
+        })
       })
-    })
-    .catch(err => {
-      console.log(err.response)
-    })
+      .catch(err => {
+        this.setState  ({
+          loading : false
+        })
+        if (err.response) {
+          Alert.alert(err.response)
+        } else {
+          Alert.alert('Image size is too large')
+        }
+      })
   }
 
   sendImg(reply) {
@@ -266,19 +275,49 @@ export default class Chat extends Component {
         originalLanguage: this.props.langcode
       }
     })
-    let define = axios({
-      url: this.props.langcode === 'en' ? 'https://apileksabot23.efratsadeli.online/df/define' : 'https://apileksabot23.efratsadeli.online/df/definefrench',
-      method: 'post',
-      data: {
-        keyword: item,
-      }
-    })
+    // let define = axios({
+    //   url: this.props.langcode === 'en' ? 'https://apileksabot23.efratsadeli.online/df/define' : 'https://apileksabot23.efratsadeli.online/df/definefrench',
+    //   method: 'post',
+    //   data: {
+    //     keyword: item,
+    //   }
+    // })
     
+    let define
+    if ((this.props.langcode === 'en')) {
+      define = axios({
+        url: 'https://apileksabot23.efratsadeli.online/df/define',
+        method: 'post',
+        data: {
+          keyword: item,
+        }
+      })
+    } else {
+      define = axios({
+        url: `https://glosbe.com/gapi/translate?from=fra&dest=fra&format=json&phrase=${item}&pretty=true`,
+      })
+    }
+
     Promise.all([translate, define])
     .then(arr => {
       let tData = arr[0].data.data
-      let definition = arr[1].data.reply
-      if (typeof definition === 'string' && this.props.langcode === 'en') {
+      let definition
+      if (arr[1].data.reply) {
+        definition = arr[1].data.reply
+      } else if (arr[1].data.tuc[0].phrase) {
+        if (arr[1].data.tuc[0].phrase.text) {
+          definition = arr[1].data.tuc[0].phrase.text
+        } else {
+          definition = 'indisponible'
+        }
+      } else if (arr[1].data.tuc[0].meanings) {
+        if (arr[1].data.tuc[0].meanings[0].text) {
+          definition = arr[1].data.tuc[0].meanings[0].text
+        } else {
+          definition = 'indisponible'
+        }
+      }
+      if (this.props.langcode === 'en' && typeof definition === 'string') {
         definition = []
       }
       this.setState({
@@ -301,6 +340,9 @@ export default class Chat extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <TouchableOpacity style={styles.menubox} onPress={() => this.props.navigation.openDrawer()}>
+          <Icon name='navicon' style={styles.menuicon}/>
+        </TouchableOpacity>
         <View style={{marginBottom: Math.max(50, this.state.inputHeight + 3), marginTop: 10}}>
           { this.state.loading && 
             <View style={{flex: 1, justifyContent: 'center', height: Dimensions.get('window').height, width: Dimensions.get('window').width, backgroundColor: 'white', position: 'absolute', zIndex: 100}}>
@@ -393,7 +435,9 @@ export default class Chat extends Component {
           animationType="slide"
           transparent={false}
           visible={this.state.translateModal}
-          onRequestClose={() => {}}>
+          onRequestClose={() => {
+            Alert.alert('Tap close to go back')
+        }}>
           <View style={styles.container}>
             <View style={styles.modcontainer}>
               <View style={styles.subcontainer}>
@@ -402,10 +446,20 @@ export default class Chat extends Component {
               </View>
             </View>
             <ScrollView style={{marginTop: 20, minHeight: 150, paddingLeft: 20}} contentContainerStyle={{flex: 0, flexGrow: 2}}>
-              { this.props.langcode === 'en' && this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
-              { this.props.langcode === 'en' && this.state.definition.map((def, index) =>
-                <Text key={index} style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
-              )}
+            {
+              this.props.langcode === 'en' ? (
+              <>
+                { this.state.definition.length > 0 && <Text style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>{ this.state.translateOriText } can be defined as:</Text> }
+                { this.state.definition.map((def, index) =>
+                  <Text key={index} style={{fontSize: 15, padding: 5, marginHorizontal: 30, marginVertical: 5, textAlign: 'justify'}}>({index + 1}) { def }</Text>
+                )}
+              </>
+              ) : (
+              <>
+                <Text style={{fontSize: 15, padding: 5, marginHorizontal: 40, marginTop: 20, marginBottom: 10, textAlign: 'justify'}}>la définition de { this.state.translateOriText } est : { this.state.definition }</Text>
+              </>
+              )
+            }
             </ScrollView>
             <TouchableOpacity
               onPress={() => {
@@ -421,6 +475,8 @@ export default class Chat extends Component {
     )
   }
 }
+
+export default withNavigation(Chat)
 
 const styles = StyleSheet.create({
   container: {
@@ -513,5 +569,19 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
     margin: 10
+  },
+  menuicon: {
+    fontSize: 25,
+    color: 'white',
+    width: 30,
+    height: 33,
+    marginTop: 5,
+    marginLeft: 10
+  },
+  menubox: {
+    position: 'absolute',
+    backgroundColor: 'red',
+    left: 20,
+    top: 10
   }
 })
