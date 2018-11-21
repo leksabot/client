@@ -202,7 +202,8 @@ export default class HangmanGame extends Component {
     this.setState({ visibleModal: null })
     this.props.navigation.navigate('Hangman', {
     }); 
-  } 
+  }
+  
   handlePress=(el,index)=>{  
       if(this.state.board[index]==false){
         let copyinput=this.state.board.slice(0)
