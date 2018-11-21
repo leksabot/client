@@ -10,9 +10,9 @@ import pic4 from '../assets/pic4.png'
 import pic5 from '../assets/pic5.png'
 const animation=[pic5,pic4,pic3,pic2,pic1]
 const allwordEN=[
-  { word:'BANANA', hint:['Yellow fruit', 'Sweet and delicate'] },
-  { word:'MOTORCYLE', hint:['Road vehicle', 'It has 2 wheels']},
-  { word:'GRAPE', hint:['Fruit come in different colours: red, purple and green', 'They are commonly used to produce wine']},
+  { word:'BANANA', hint:['Yellow fruit', 'Sweet and delicate'] }, 
+  { word:'MOTORCYCLE', hint:['Road vehicle', 'It has 2 wheels']},
+  { word:'GRAPE', hint:['A dull, dark, purplish-red color', 'They are commonly used to produce wine']},
   { word:'CHAIR', hint:['A piece of furniture designed to accommodate one sitting','Typically standing on four legs']},
   { word:'HOUSE', hint:['A building for human habitation']},
   { word:'LEG', hint:['A limb of a human used especially for supporting the body', 'A limb of a human used for walking']},
@@ -148,7 +148,7 @@ export default class HangmanGame extends Component {
     SoundPlayer.setCategory('Playback', true);
     const callback = (error, sound) => {
       if (error) {
-        Alert.alert('Error play music', error.message);
+        console.log('Error play music', error.message);
         return;
       }
       sound.setNumberOfLoops(-1);
@@ -158,7 +158,7 @@ export default class HangmanGame extends Component {
     };
     const callback2 = (error, sound) => {
       if (error) {
-        Alert.alert('Error play music', error.message);
+        console.log('Error play music', error.message);
         return;
       }
     };
@@ -203,7 +203,7 @@ export default class HangmanGame extends Component {
     this.props.navigation.navigate('Hangman', {
     }); 
   }
-  
+
   handlePress=(el,index)=>{  
       if(this.state.board[index]==false){
         let copyinput=this.state.board.slice(0)
