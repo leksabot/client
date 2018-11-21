@@ -11,12 +11,11 @@ import pic5 from '../assets/pic5.png'
 const animation=[pic5,pic4,pic3,pic2,pic1]
 const allwordEN=[
   { word:'BANANA', hint:['Yellow fruit', 'Sweet and delicate'] }, 
-  { word:'MOTORCYCLE', hint:['Road vehicle', 'It has 2 wheels']},
+  { word:'BOXING', hint:['A combat sport in which two people, usually wearing protective gloves']},
   { word:'GRAPE', hint:['A dull, dark, purplish-red color', 'They are commonly used to produce wine']},
   { word:'CHAIR', hint:['A piece of furniture designed to accommodate one sitting','Typically standing on four legs']},
   { word:'HOUSE', hint:['A building for human habitation']},
   { word:'LEG', hint:['A limb of a human used especially for supporting the body', 'A limb of a human used for walking']},
- 
 ]
 const allwordFR=[
   { word: 'MAISON', hint: ['un bâtiment d\'habitation','destiné au logement d\'une famille']},     
@@ -51,6 +50,7 @@ export default class HangmanGame extends Component {
       winSound:null
     }
   }
+  
   startGame=async()=>{
     
     if(this.props.navigation.state.params.lang=='EN'){
