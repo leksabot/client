@@ -6,8 +6,6 @@ import SoundPlayer from 'react-native-sound'
 const dimensions = Dimensions.get('window');
 
 console.disableYellowBox = true;
-// Load the sound file 'whoosh.mp3' from the app bundle
-// See notes below about preloading sounds within initialization code below.
 
 class BackgroundImage extends Component { 
   render() {
@@ -51,7 +49,6 @@ export default class HangmanStart extends Component {
     }   
   }
   stopmusic=()=>{
-    //alert('stoppp')
     if(this.state.linksound!=null){
       this.state.linksound.stop().release();
       this.setState({ linksound:null})
