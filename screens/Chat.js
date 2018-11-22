@@ -70,7 +70,7 @@ class Chat extends Component {
       } else {
         this.setState({
           messages: [{
-            text: this.props.langcode === 'en' ? `Hi, ${this.state.userName}. My name is Leksa and I'm here to help you improve your English.` : `Salut ${this.state.userName}. Je m'appelle Leksa et je suis ici pour vous aider à améliorer votre français.` ,
+            text: this.props.langcode === 'en' ? `Hi, ${this.state.userName}. My name is Leksa and I'm here to help you improve your English. If you need some help type: Leksa Help.` : `Salut ${this.state.userName}. Je m'appelle Leksa et je suis ici pour vous aider à améliorer votre français. Si tu as besoin d'aide, tapez Leksa Aidez-moi.` ,
             time: getHourAndMinute(),
             user: 2
           }]
